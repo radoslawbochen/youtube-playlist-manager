@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+
+</head>
+<body>
+<form action="#" th:action="@{/viewPlaylist}" th:object="${playlist}" method="post">
+  Playlist link:
+  <label>Playlist</label>
+  <input th:field="*{link}"/>
+  <input type="submit" value="Submit"/>
+</form>
+
+<form th:action="@{/login}">
+    <input type="submit" value="Login" />
+</form>
+</body>
+</html>

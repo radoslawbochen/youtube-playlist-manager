@@ -1,0 +1,93 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<script type="text/javascript" th:inline="javascript">
+//<![CDATA[      
+    var tag = document.createElement('script');
+	tag.src = "https://www.youtube.com/iframe_api";
+	var ScriptTag = document.getElementsByTagName('script')[0];
+	ScriptTag.parentNode.insertBefore(tag, ScriptTag);
+
+      var player;
+      function onYouTubeIframeAPIReady() {
+        player = new YT.Player('player', {
+        	height: '360',
+            width: '640',
+            videoId: 'YtF6p_w-cSc',
+          	events: {
+                'onReady': onPlayerReady, 
+                'onStateChange': onPlayerStateChange,
+            }
+        });
+      }
+
+      function onPlayerReady(event) {
+        event.target.playVideo();
+      }
+    
+      function onPlayerStateChange(event) {
+
+       	 //alert (player.getPlayerState() + ' = without if');
+          if (event.data == YT.PlayerState.ENDED) { 
+        	 player.cueVideoById('NMPVGxvaBxo')
+        	 player.playVideo();
+          	 //alert (player.getPlayerState() + ' = with if');
+          }    
+          
+    	}
+      //]]>
+    </script>
+	
+<head>
+<style>
+html,body {
+    width:1000px;
+    background:blue;
+}
+.playlistInfo {
+	width:700px;
+	background-color:gray;
+}
+.userPlaylists {
+	float:right;
+}
+</style>
+</head>
+ <body>
+<div class="userPlaylists">
+<p>Your new playlists</p>
+<hr></hr>
+Add playlist
+<form action="#" th:action="@{/viewPlaylist}" method="post">
+  <label>Name:</label>
+  <input type="text" name="name"/>
+  <input type="submit" value="Submit" th:attr="value=${name}"/>
+</form>
+<br></br>
+//load playlists from db
+</div>
+<div id="player"></div>
+   
+
+<div class="playlistInfo" th:if="!${#lists.isEmpty(playlistInfo.playlistInfoHelper)}">
+<table bgcolor="#404040" width="700px">
+<tr>
+	<td width="70%">Name</td>
+	<td width="20%">Videos #</td>
+	<td width="10%">TODO</td>
+</tr>
+</table>
+<table>
+<tr th:each="info : ${playlistInfo.playlistInfoHelper}">
+	<td width="70%" th:text="${info.getName()}"></td>
+	<td width="20%" th:text="${info.getSum()}"></td>
+	<td width="10%" th:text="${info.getLink()}"></td>
+</tr>
+</table>
+</div>
+
+<div class="playlistInfo" th:if="${#lists.isEmpty(playlistInfo.playlistInfoHelper)}">
+<p>You have no playlists on YouTube!</p>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,55 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<script type="text/javascript" th:inline="javascript">
+//<![CDATA[      
+    var tag = document.createElement('script');
+	tag.src = "https://www.youtube.com/iframe_api";
+	var ScriptTag = document.getElementsByTagName('script')[0];
+	ScriptTag.parentNode.insertBefore(tag, ScriptTag);
+
+      var player;
+      function onYouTubeIframeAPIReady() {
+        player = new YT.Player('player', {
+        	height: '360',
+            width: '640',
+            videoId: 'YtF6p_w-cSc',
+          	events: {
+                'onReady': onPlayerReady, 
+                'onStateChange': onPlayerStateChange,
+            }
+        });
+      }
+
+      function onPlayerReady(event) {
+        event.target.playVideo();
+      }
+    
+      function onPlayerStateChange(event) {
+
+       	 //alert (player.getPlayerState() + ' = without if');
+          if (event.data == YT.PlayerState.ENDED) { 
+        	 player.cueVideoById('NMPVGxvaBxo')
+        	 player.playVideo();
+          	 //alert (player.getPlayerState() + ' = with if');
+          }    
+          
+    	}
+      //]]>
+    </script>
+	
+}
+<head>
+<style>
+	.playlist {
+	width:400px;
+	background-color:gray;
+	float:right;
+</style>
+</head>
+<body>
+<div id="player"></div>
+<div class="playlist">
+
+</div>
+</body>
+</html>
