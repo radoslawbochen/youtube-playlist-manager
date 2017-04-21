@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import playlist.controller.MyUploads;
+import playlist.entity.PlaylistLink;
 import playlist.entity.User;
 import playlist.entity.UsermadePlaylist;
 import playlist.entity.UsermadePlaylistInfo;
@@ -22,10 +23,23 @@ public class UsermadePlaylistServiceImpl implements UsermadePlaylistService {
 
 	@Autowired
 	private UsermadePlaylistRepository usermadePlaylistRepo;
-		
+	
+	
 	@Override
 	public List<User> findByChannelIdAndPlaylistName(String channelId, String playlistName) {
-		return this.usermadePlaylistRepo.findByChannelIdAndPlaylistName(channelId, playlistName);
+		Iterator<User> itr = this.usermadePlaylistRepo.findByChannelIdAndPlaylistName(channelId, playlistName).iterator();
+		List<User> usermadePlaylistList = new ArrayList<User>();
+		System.out.println(usermadePlaylistList.size());
+		while(itr.hasNext()){
+			User user = itr.next();
+			if(user.getLink() != null){
+				System.out.println("Link: " + user.getLink());
+				usermadePlaylistList.add(user);
+			}
+		}
+		System.out.println(usermadePlaylistList.size());
+
+		return usermadePlaylistList;
 	}
 	
 	@Override
@@ -67,4 +81,61 @@ public class UsermadePlaylistServiceImpl implements UsermadePlaylistService {
 		this.usermadePlaylistRepo.deleteByChannelIdAndPlaylistName(channelId, playlistName);
 	}
 
+	@Override
+	public void deleteById(Long id) {
+		this.usermadePlaylistRepo.deleteById(id);
+	}
+
+	@Override
+	public void add(String channelId, String playlistName, String link) {
+		User user = new User(10L, channelId, playlistName, link, 0);
+		this.usermadePlaylistRepo.save(user);
+	}
+
+	@Override
+	public ArrayList<User> findAllByLink(List<String> userId) {		
+		return this.usermadePlaylistRepo.findAllByLink(userId);
+	}
+
+	@Override
+	public User findbyLink(String link){
+		return this.usermadePlaylistRepo.findByLink(link);
+	}
+
+	@Override
+	public void add(List<PlaylistLink> playlistLinkList, String playlistName) {
+		String channelId = MyUploads.getChannelId();
+		ListIterator<PlaylistLink> itr = playlistLinkList.listIterator();
+		List<User> userList = new ArrayList<User>();
+		while(itr.hasNext()){
+			PlaylistLink p = itr.next();
+			if(p.getLink() != null){
+				userList.add(new User(
+						10L,
+						channelId,
+						playlistName, 
+						p.getLink(),
+						0
+						));
+			}
+		}
+		
+		ListIterator<User> userListItr = userList.listIterator();
+ 		while(userListItr.hasNext()){
+			this.usermadePlaylistRepo.save(userListItr.next());
+		}
+	}
+
+	@Override
+	public void delete(ArrayList<User> userList, String playlistName) {
+		Iterator<User> itr = userList.iterator();
+		
+		while(itr.hasNext()){
+			User u = itr.next();
+			if(u.getId() != null){
+				this.usermadePlaylistRepo.deleteById(u.getId());
+			}
+		}
+	}
+	
 }

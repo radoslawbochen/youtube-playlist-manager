@@ -2,6 +2,7 @@ package playlist.controller;
 
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.services.youtube.YouTube;
+import com.google.api.services.youtube.YouTube.PlaylistItems;
 import com.google.api.services.youtube.model.Channel;
 import com.google.api.services.youtube.model.ChannelListResponse;
 import com.google.api.services.youtube.model.Playlist;
@@ -10,6 +11,7 @@ import com.google.api.services.youtube.model.PlaylistItemListResponse;
 import com.google.api.services.youtube.model.PlaylistListResponse;
 import com.google.common.collect.Lists;
 
+import playlist.entity.YoutubePlaylist;
 import playlist.entity.YoutubePlaylistInfo;
 import playlist.security.Auth;
 
@@ -55,7 +57,6 @@ public class MyUploads {
 				channelIdRequest.setMine(true);
 		        channelIdRequest.getId();
 		        ChannelListResponse channelIdResult = channelIdRequest.execute();
-		        System.out.println("channelIdResult.getItems().get(0).getId() = " + channelIdResult.getItems().get(0).getId());
 		        channelId = channelIdResult.getItems().get(0).getId();
 		        channelId = channelId.replace("-", "");
 			} catch (IOException e) {
@@ -63,39 +64,7 @@ public class MyUploads {
 			}
 		return channelId;
     }
-    
-    public static List<YoutubePlaylistInfo> fetchPlaylistsInfoList(){
-        List<YoutubePlaylistInfo> youtubePlaylistInfoList = new ArrayList<YoutubePlaylistInfo>();
-        YouTube.Playlists.List searchList;
-		try {
-			searchList = youtube.playlists().list("id,snippet,contentDetails");
-			searchList.setFields("etag,eventId,items(contentDetails,etag,id,kind,player,snippet,status),kind,nextPageToken,pageInfo,prevPageToken,tokenPagination");
-	        searchList.setMine(true);
-	        PlaylistListResponse playListResponse = searchList.execute();
-	        List<Playlist> playlists = playListResponse.getItems();
-	        
-	        if (playlists != null) {
-	        	Iterator<Playlist> iteratorPlaylistResults = playlists.iterator();
-	                            if (!iteratorPlaylistResults.hasNext()) {
-	                                System.out.println(" There aren't any results for your query.");
-	                            }
-	                            while (iteratorPlaylistResults.hasNext()) {
-	                                Playlist playlist = iteratorPlaylistResults.next();                          
-	                                int playlistSize = (int) (long) playlist.getContentDetails().getItemCount();
-	                               
-	                                youtubePlaylistInfoList.add(new YoutubePlaylistInfo(
-	                                		playlist.getSnippet().getTitle(),
-	                                		playlistSize,
-	                                		playlist.getId()));                                
-	                            }
-	        }
-		} catch (IOException e) {
-			e.printStackTrace();
-		}     
-        
-    	return youtubePlaylistInfoList;    	
-    }
-    
+           
     public MyUploads(UserContents userContents){
     	this.userContents = userContents;
     	// This OAuth 2.0 access scope allows for read-only access to the
@@ -245,4 +214,101 @@ public class MyUploads {
             System.out.println("\n-------------------------------------------------------------\n");
         }
     }
+    
+    public static List<YoutubePlaylistInfo> fetchPlaylistsInfoList(){
+        List<YoutubePlaylistInfo> youtubePlaylistInfoList = new ArrayList<YoutubePlaylistInfo>();
+        YouTube.Playlists.List searchList;
+		try {
+			searchList = youtube.playlists().list("id,snippet,contentDetails");
+			searchList.setFields("etag,eventId,items(contentDetails,etag,id,kind,player,snippet,status),kind,nextPageToken,pageInfo,prevPageToken,tokenPagination");
+	        searchList.setMine(true);
+	        PlaylistListResponse playListResponse = searchList.execute();
+	        List<Playlist> playlists = playListResponse.getItems();
+	        
+	        if (playlists != null) {
+	        	Iterator<Playlist> iteratorPlaylistResults = playlists.iterator();
+	                            if (!iteratorPlaylistResults.hasNext()) {
+	                                System.out.println(" There aren't any results for your query.");
+	                            }
+	                            while (iteratorPlaylistResults.hasNext()) {
+	                                Playlist playlist = iteratorPlaylistResults.next();                          
+	                                int playlistSize = (int) (long) playlist.getContentDetails().getItemCount();
+	                               
+	                                youtubePlaylistInfoList.add(new YoutubePlaylistInfo(
+	                                		playlist.getSnippet().getTitle(),
+	                                		playlistSize,
+	                                		playlist.getId()));                                
+	                            }
+	        }
+		} catch (IOException e) {
+			e.printStackTrace();
+		}     
+        
+    	return youtubePlaylistInfoList;    	
+    }
+
+	public static List<YoutubePlaylist> fetchPlaylistList(String channelId) {
+        List<YoutubePlaylist> youtubePlaylistList = new ArrayList<YoutubePlaylist>();
+        YouTube.Playlists.List searchList;
+		try {
+			searchList = youtube.playlists().list("id,snippet,contentDetails");
+			searchList.setFields("etag,eventId,items(contentDetails,etag,id,kind,player,snippet,status),kind,nextPageToken,pageInfo,prevPageToken,tokenPagination");
+	        searchList.setMine(true);
+	        PlaylistListResponse playlistListResponse = searchList.execute();
+	        List<Playlist> playlists = playlistListResponse.getItems();
+	        
+	        if (playlists != null) {
+	        	Iterator<Playlist> iteratorPlaylistResults = playlists.iterator();
+	                            if (!iteratorPlaylistResults.hasNext()) {
+	                                System.out.println(" There aren't any results for your query.");
+	                            }
+	                            while (iteratorPlaylistResults.hasNext()) {
+	                                Playlist playlist = iteratorPlaylistResults.next();                          
+	                                int playlistSize = (int) (playlist.getContentDetails().getItemCount() - 1);
+	                                String playlistId = playlist.getId();
+	                                
+	                                youtubePlaylistList.add(new YoutubePlaylist(
+	                                		playlist.getSnippet().getTitle(),
+                                    		playlistSize,
+                                    		playlistId,
+	                                		getPlaylistItems(playlistId)
+	                                		));                                
+	                            }
+	        }
+		} catch (IOException e) {
+			e.printStackTrace();
+		}     
+        
+    	return youtubePlaylistList;
+	}	
+	
+	public static List<String> getPlaylistItems(String playlistId) throws IOException
+    {
+        List<PlaylistItem> items = new ArrayList<>();
+
+        YouTube.PlaylistItems.List request = youtube.playlistItems().list("contentDetails,snippet");
+        request.setPlaylistId(playlistId);
+        PlaylistItemListResponse retrieved = request.execute();
+
+        while (retrieved.getNextPageToken() != null){
+            items.addAll(retrieved.getItems());
+            request = youtube.playlistItems().list("contentDetails,snippet");
+            request.setPlaylistId(playlistId);
+            request.setPageToken(retrieved.getNextPageToken());
+            retrieved = request.execute();
+        }
+
+        if (retrieved.getNextPageToken() == null){
+            items.addAll(retrieved.getItems());
+        }
+        
+        List<String> itemsIdList = new ArrayList<String>();
+        Iterator<PlaylistItem> itr = items.iterator();
+        while(itr.hasNext()){
+        	itemsIdList.add(new String(itr.next().getContentDetails().getVideoId()));
+        }
+        
+        return itemsIdList;
+    }
+	
 }

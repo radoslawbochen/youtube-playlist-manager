@@ -19,6 +19,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -29,11 +30,15 @@ import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.common.collect.Lists;
 
 import playlist.entity.PlaylistInfoModel;
+import playlist.entity.PlaylistLink;
+import playlist.entity.PlaylistLinkWrapper;
 import playlist.entity.PlaylistModel;
 import playlist.entity.PlaylistService;
 import playlist.entity.User;
+import playlist.entity.UserWrapper;
 import playlist.entity.UsermadeAppPlaylistModel;
 import playlist.entity.UsermadePlaylistInfo;
+import playlist.entity.YoutubePlaylist;
 import playlist.entity.YoutubePlaylistInfo;
 import playlist.security.Auth;
 import playlist.security.AuthorizationCodeInstalledApp;
@@ -48,13 +53,9 @@ public class PlaylistController {
 	
 	@Autowired
 	private UsermadePlaylistService usermadePlaylistService;
-	@Autowired YoutubePlaylistService youtubePlaylistService;
-	
-	@RequestMapping(value = "/getPhp")
-	public String getPhp(){
-		return "example";
-	}
-	
+	@Autowired 
+	private YoutubePlaylistService youtubePlaylistService;
+		
 	@RequestMapping(value = "/")
 	public String index(Model model){	
 		if(credential != null){
@@ -87,7 +88,7 @@ public class PlaylistController {
 		//return "redirect:https://accounts.google.com/o/oauth2/auth?client_id=252777349769-slb56loumaivmrri04oqfua5mfu16oi8.apps.googleusercontent.com&redirect_uri=http://localhost:8080&scope=https://gdata.youtube.com&response_type=code&access_type=offline";
     }
 	
-    @RequestMapping(value = "/viewPlaylist")
+    @RequestMapping(value = "/viewPlaylist", method = RequestMethod.GET)
     public String playlistView(@RequestParam(value = "playlist", required = false) String playlistName,
 			PlaylistModel playlistTest,
 			PlaylistInfoModel playlistInfo,
@@ -101,16 +102,22 @@ public class PlaylistController {
         
     			if (playlistName != null){
     				MyUploads myUploads = new MyUploads(userContents);
-    				String channelId = userContents.getChannelId();
-			
-			//usermadePlaylistService.saveUser(new User(10L, "UCODHgrgA5lVE5htZ1ffpOg", "playlistNameU1", "testLink3", 24));
-    				List<User> userPlaylistList = usermadePlaylistService.findByChannelIdAndPlaylistName(channelId, playlistName);
-    				model.addAttribute("userPlaylistList", userPlaylistList);
+    				String channelId = userContents.getChannelId();			
+    				List<User> usermadePlaylistList = usermadePlaylistService.findByChannelIdAndPlaylistName(channelId, playlistName);
+    				List<YoutubePlaylist> youtubePlaylistList = youtubePlaylistService.findYoutubePlaylistsByChanellId(channelId);
+    				System.out.println(usermadePlaylistList.size());
+    				
+    				model.addAttribute("playlistName", playlistName);
+    				model.addAttribute("users", new UserWrapper());
+    				model.addAttribute("addList" , new PlaylistLinkWrapper());
+    				model.addAttribute("youtubePlaylistList", youtubePlaylistList);
+    				model.addAttribute("usermadePlaylistList", usermadePlaylistList);
     				return "playlistViewA";
     			}else {
     				List<YoutubePlaylistInfo> youtubePlaylistInfoList = youtubePlaylistService.findYoutubePlaylistsInfo();
     				List<UsermadePlaylistInfo> usermadePlaylistInfoList = usermadePlaylistService.findDistinctPlaylistNameByChannelId();
-					model.addAttribute("youtubePlaylistInfoList", youtubePlaylistInfoList);
+					
+    				model.addAttribute("youtubePlaylistInfoList", youtubePlaylistInfoList);
 					model.addAttribute("usermadePlaylistInfoList", usermadePlaylistInfoList);
 					return "playlistView";
 			}
@@ -118,6 +125,27 @@ public class PlaylistController {
     	
 		return "redirect:/redirection";
     }
+    
+    @RequestMapping(value = "/delete", method = RequestMethod.POST)
+	public String delete(
+    		@ModelAttribute(value = "users") UserWrapper userWrapper,
+    		@RequestParam(value = "playlistName") String playlistName
+    		){
+    	usermadePlaylistService.delete(userWrapper.getUsers(), playlistName);
+        	
+    	return "redirect:/viewPlaylist?playlist=" + playlistName;
+    }
+    
+    @RequestMapping(value = "/add", method = RequestMethod.POST)
+    public String add(
+    		@ModelAttribute(value = "addlist") PlaylistLinkWrapper playlistLinkWrapper,
+    		@RequestParam(value = "playlistName", required = false) String playlistName
+    		){
+		usermadePlaylistService.add(playlistLinkWrapper.getPlaylistLinkList(), playlistName);
+
+    	return "redirect:/viewPlaylist?playlist=" + playlistName;
+    }
+
     
     /*
 	@RequestMapping(value = "/viewPlaylist", method = RequestMethod.GET)
@@ -156,17 +184,16 @@ public class PlaylistController {
     
 	@RequestMapping(value = "/viewPlaylist", method = RequestMethod.POST)
 	public String addPlaylist(
-			@RequestParam(required = false, value = "name") String playlistName,
-			@RequestParam(required = false, value = "delete") String delete
+			@RequestParam(required = false, value = "name") String addPlaylistName,
+			@RequestParam(required = false, value = "delete") String deletePlaylistName
 	){
-
 		String channelId = MyUploads.getChannelId();
-		if (playlistName != null){
-			usermadePlaylistService.saveUser(new User(10L, channelId, playlistName, "", 0));
-		    String getPlaylist = "?playlist=" + playlistName;
+		if (addPlaylistName != null){
+			usermadePlaylistService.saveUser(new User(10L, channelId, addPlaylistName, "", 0));
+		    String getPlaylist = "?playlist=" + addPlaylistName;
 			return "redirect:/viewPlaylist" + getPlaylist;
-		}else if(delete != null){
-			usermadePlaylistService.deleteByChannelIdAndPlaylistName(channelId, delete);
+		}else if(deletePlaylistName != null){
+			usermadePlaylistService.deleteByChannelIdAndPlaylistName(channelId, deletePlaylistName);
 			return "redirect:/viewPlaylist";
 			
 		}

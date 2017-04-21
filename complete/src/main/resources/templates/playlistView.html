@@ -68,7 +68,7 @@ Add playlist
 	<div th:if="!${#lists.isEmpty(usermadePlaylistInfoList)}">
 	<table bgcolor="#404040">
 	<tr th:each="info : ${usermadePlaylistInfoList}">
-		<td width="70%" th:text="${info.getName()}"></td>
+		<td width="70%"><a th:text="${info.getName()}" th:href="@{'/viewPlaylist?playlist=' + ${info.getName()}}"></a></td>
 		<td width="30%" th:text="${info.getVideosAmount()}"></td>
 		<td >
 			<form method="post">

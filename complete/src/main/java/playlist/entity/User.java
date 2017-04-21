@@ -26,6 +26,11 @@ public class User {
 	
 	public User() { }
 	
+	public User(Long id){
+		super();
+		this.id = id;
+	}
+	
 	public User(Long id, String channelId, String playlistName, String link, int timesRepeated) {
 		super();
 		this.id = id;
