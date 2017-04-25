@@ -37,6 +37,9 @@ public class MyUploads {
     public List<String> userPlaylistIdList = new ArrayList<String>();
     public List<Integer> userPlaylistSizeList = new ArrayList<Integer>();
     public List<String> userPlaylistNameList = new ArrayList<String>();
+    private static List<String> itemsIdList = new ArrayList<String>();
+    private static List<String> itemsTitleList = new ArrayList<String>();
+
     /**
      * Authorize the user, call the youtube.channels.list method to retrieve
      * the playlist ID for the list of videos uploaded to the user's channel,
@@ -256,6 +259,7 @@ public class MyUploads {
 	        searchList.setMine(true);
 	        PlaylistListResponse playlistListResponse = searchList.execute();
 	        List<Playlist> playlists = playlistListResponse.getItems();
+	        System.out.println("playlists.size: " + playlists.size());
 	        
 	        if (playlists != null) {
 	        	Iterator<Playlist> iteratorPlaylistResults = playlists.iterator();
@@ -271,8 +275,9 @@ public class MyUploads {
 	                                		playlist.getSnippet().getTitle(),
                                     		playlistSize,
                                     		playlistId,
-	                                		getPlaylistItems(playlistId)
-	                                		));                                
+                                    		getIds(playlistId),
+                                    		getTitles(playlistId)                                    		
+	                                		));             
 	                            }
 	        }
 		} catch (IOException e) {
@@ -281,34 +286,78 @@ public class MyUploads {
         
     	return youtubePlaylistList;
 	}	
-	
-	public static List<String> getPlaylistItems(String playlistId) throws IOException
-    {
-        List<PlaylistItem> items = new ArrayList<>();
+		
+	static List<String> getIds(String playlistId){
+		List<String> idsList = new ArrayList<>();
+		try {
+		List<PlaylistItem> playlistItemList = new ArrayList<PlaylistItem>();
+		playlistItemList.clear();
 
-        YouTube.PlaylistItems.List request = youtube.playlistItems().list("contentDetails,snippet");
-        request.setPlaylistId(playlistId);
-        PlaylistItemListResponse retrieved = request.execute();
+        YouTube.PlaylistItems.List playlistItemRequest;
+			playlistItemRequest = youtube.playlistItems().list("id,contentDetails,snippet");
+		
+        playlistItemRequest.setPlaylistId(playlistId);
 
-        while (retrieved.getNextPageToken() != null){
-            items.addAll(retrieved.getItems());
-            request = youtube.playlistItems().list("contentDetails,snippet");
-            request.setPlaylistId(playlistId);
-            request.setPageToken(retrieved.getNextPageToken());
-            retrieved = request.execute();
-        }
+        playlistItemRequest.setFields(
+                "items(contentDetails/videoId),nextPageToken,pageInfo");
 
-        if (retrieved.getNextPageToken() == null){
-            items.addAll(retrieved.getItems());
-        }
+        String nextToken = "";
         
-        List<String> itemsIdList = new ArrayList<String>();
-        Iterator<PlaylistItem> itr = items.iterator();
+        do {
+            playlistItemRequest.setPageToken(nextToken);
+            PlaylistItemListResponse playlistItemResult;
+			playlistItemResult = playlistItemRequest.execute();
+            playlistItemList.addAll(playlistItemResult.getItems());
+            nextToken = playlistItemResult.getNextPageToken();
+        } while (nextToken != null);
+        
+        Iterator<PlaylistItem> itr = playlistItemList.iterator();
         while(itr.hasNext()){
-        	itemsIdList.add(new String(itr.next().getContentDetails().getVideoId()));
+           PlaylistItem playlistItem = itr.next();
+           idsList.add(new String(playlistItem.getContentDetails().getVideoId()));
         }
         
-        return itemsIdList;
-    }
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		return idsList;
+	}
+	
+	static List<String> getTitles(String playlistId){
+		List<String> titlesList = new ArrayList<>();
+		try {
+		List<PlaylistItem> playlistItemList = new ArrayList<PlaylistItem>();
+		playlistItemList.clear();
+
+        YouTube.PlaylistItems.List playlistItemRequest;
+			playlistItemRequest = youtube.playlistItems().list("id,contentDetails,snippet");
+		
+        playlistItemRequest.setPlaylistId(playlistId);
+
+        playlistItemRequest.setFields(
+                "items(snippet/title),nextPageToken,pageInfo");
+
+        String nextToken = "";
+
+        do {
+            playlistItemRequest.setPageToken(nextToken);
+            PlaylistItemListResponse playlistItemResult;
+			playlistItemResult = playlistItemRequest.execute();
+            playlistItemList.addAll(playlistItemResult.getItems());
+            nextToken = playlistItemResult.getNextPageToken();
+        } while (nextToken != null);
+        
+        Iterator<PlaylistItem> itr = playlistItemList.iterator();
+        while(itr.hasNext()){
+           PlaylistItem playlistItem = itr.next();
+           titlesList.add(new String(playlistItem.getSnippet().getTitle()));
+        }
+        
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		return titlesList;
+	}
+	
 	
 }

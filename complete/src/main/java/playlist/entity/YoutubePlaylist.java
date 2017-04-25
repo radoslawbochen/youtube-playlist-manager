@@ -4,12 +4,13 @@ import java.util.List;
 
 public class YoutubePlaylist {
 	
-	public YoutubePlaylist(String name, int videosAmount, String id, List<String> playlistItemLinkList) {
+	public YoutubePlaylist(String name, int videosAmount, String id, List<String> playlistItemsLinksList, List<String> playlistItemsTitlesList) {
 		super();
 		this.name = name;
 		this.videosAmount = videosAmount;
 		this.id = id;
-		this.playlistItemLinkList = playlistItemLinkList;
+		this.playlistItemsLinksList = playlistItemsLinksList;
+		this.playlistItemsTitlesList = playlistItemsTitlesList;
 	}
 	
 	public YoutubePlaylist(){
@@ -18,7 +19,8 @@ public class YoutubePlaylist {
 	private String name;
 	private int videosAmount;
 	private String id;
-	private List<String> playlistItemLinkList;
+	private List<String> playlistItemsLinksList;
+	private List<String> playlistItemsTitlesList;
 	
 	public String getName() {
 		return name;
@@ -38,11 +40,19 @@ public class YoutubePlaylist {
 	public void setId(String id) {
 		this.id = id;
 	}
-	public List<String> getPlaylistItemLinkList() {
-		return playlistItemLinkList;
+	public List<String> getPlaylistItemsLinksList() {
+		return playlistItemsLinksList;
 	}
-	public void setPlaylistItemLinkList(List<String> playlistItemLinkList) {
-		this.playlistItemLinkList = playlistItemLinkList;
+	public void setPlaylistItemsLinksList(List<String> playlistItemsLinksList) {
+		this.playlistItemsLinksList = playlistItemsLinksList;
+	}
+
+	public List<String> getPlaylistItemsTitlesList() {
+		return playlistItemsTitlesList;
+	}
+
+	public void setPlaylistItemsTitlesList(List<String> playlistItemsTitlesList) {
+		this.playlistItemsTitlesList = playlistItemsTitlesList;
 	}
 	
 	

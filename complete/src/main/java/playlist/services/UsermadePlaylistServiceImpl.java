@@ -33,7 +33,6 @@ public class UsermadePlaylistServiceImpl implements UsermadePlaylistService {
 		while(itr.hasNext()){
 			User user = itr.next();
 			if(user.getLink() != null){
-				System.out.println("Link: " + user.getLink());
 				usermadePlaylistList.add(user);
 			}
 		}

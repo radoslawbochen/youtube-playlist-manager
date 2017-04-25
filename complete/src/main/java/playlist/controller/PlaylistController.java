@@ -105,8 +105,7 @@ public class PlaylistController {
     				String channelId = userContents.getChannelId();			
     				List<User> usermadePlaylistList = usermadePlaylistService.findByChannelIdAndPlaylistName(channelId, playlistName);
     				List<YoutubePlaylist> youtubePlaylistList = youtubePlaylistService.findYoutubePlaylistsByChanellId(channelId);
-    				System.out.println(usermadePlaylistList.size());
-    				
+    				    				
     				model.addAttribute("playlistName", playlistName);
     				model.addAttribute("users", new UserWrapper());
     				model.addAttribute("addList" , new PlaylistLinkWrapper());
@@ -141,7 +140,7 @@ public class PlaylistController {
     		@ModelAttribute(value = "addlist") PlaylistLinkWrapper playlistLinkWrapper,
     		@RequestParam(value = "playlistName", required = false) String playlistName
     		){
-		usermadePlaylistService.add(playlistLinkWrapper.getPlaylistLinkList(), playlistName);
+		usermadePlaylistService.add(playlistLinkWrapper.getAddList(), playlistName);
 
     	return "redirect:/viewPlaylist?playlist=" + playlistName;
     }

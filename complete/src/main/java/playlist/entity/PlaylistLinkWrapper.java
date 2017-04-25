@@ -4,14 +4,14 @@ import java.util.List;
 
 public class PlaylistLinkWrapper{
 
-	private List<PlaylistLink> playlistLinkList;
+	private List<PlaylistLink> addList;
 
-	public List<PlaylistLink> getPlaylistLinkList() {
-		return playlistLinkList;
+	public List<PlaylistLink> getAddList() {
+		return addList;
 	}
 
-	public void setPlaylistLinkList(List<PlaylistLink> playlistLinkList) {
-		this.playlistLinkList = playlistLinkList;
+	public void setAddList(List<PlaylistLink> addList) {
+		this.addList = addList;
 	}	
 	
 }

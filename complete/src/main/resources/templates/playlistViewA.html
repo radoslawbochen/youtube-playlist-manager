@@ -1,15 +1,25 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-  <style>
-	.playlist {
-	width:400px;
-	background-color:gray;
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<style>
+html,body {
+    width:1000px;
+    background:gray;
+}
+.youtubePlaylists {
+	clear:both;
+}
+.usermadePlaylist {
+	width:360;
 	float:right;
-  </style>
+}
+.player {
+	width:640px;
+}
+</style>
 </head>
 <script type="text/javascript" th:inline="javascript">
 //<![CDATA[      
@@ -17,18 +27,25 @@
 	tag.src = "https://www.youtube.com/iframe_api";
 	var ScriptTag = document.getElementsByTagName('script')[0];
 	ScriptTag.parentNode.insertBefore(tag, ScriptTag);
-
-      var player;
+    var player;
+	var videoIdList = [];
+	var currentVideoIdArrayIndex = 1;
+	var url;
+	var placeholder = [[${usermadePlaylistList}]];
+	
       function onYouTubeIframeAPIReady() {
-        player = new YT.Player('player', {
+    	  for(i = 0; i < placeholder.length; i++){
+    		  videoIdList.push(placeholder[i].link);
+    	  }
+          player = new YT.Player('player', {
         	height: '360',
             width: '640',
-            videoId: 'YtF6p_w-cSc',
+            videoId: videoIdList[0],
           	events: {
                 'onReady': onPlayerReady, 
                 'onStateChange': onPlayerStateChange,
             }
-        });
+          });
       }
 
       function onPlayerReady(event) {
@@ -36,27 +53,23 @@
       }
     
       function onPlayerStateChange(event) {
-
-       	 //alert (player.getPlayerState() + ' = without if');
-          if (event.data == YT.PlayerState.ENDED) { 
-        	 player.cueVideoById('NMPVGxvaBxo')
+          if (event.data == YT.PlayerState.ENDED) {
+        	 url  = videoIdList[currentVideoIdArrayIndex];
+        	 player.cueVideoById(url);
+        	 currentVideoIdArrayIndex++;
         	 player.playVideo();
-          	 //alert (player.getPlayerState() + ' = with if');
-          }    
-          
-    	}
+          }
+       }
       //]]>
-    </script>
+</script>
 <body>
-<div id="player"></div>
+<div id="player" class="player">
+<input type="hidden" id="usermadePlaylistList" value="${usermadePlaylistList}" />     
+</div>
+
 <div class="usermadePlaylist">
 	<div th:if="!${#lists.isEmpty(usermadePlaylistList)}" >
-		<!-- <form action="#" th:action="@{/viewPlaylist}" th:object="${deleteList}" method="post" > -->
-		<form action="#" method="post" th:action="@{/delete}" th:object="${users}"> 
-		<!-- 
-			<th:each items="${users.users}" var="user" varStatus="status">
-			</th:each>
-			 -->
+		<form action="#" method="post" th:action="@{/delete}" th:object="${users}">
 			<table bgcolor="#404040">
 			<tr th:each="userPlaylist, status : ${usermadePlaylistList}">
 				<td width="70%" th:text="${userPlaylist.getLink()}"></td>
@@ -73,6 +86,7 @@
 	</div>
 </div>
 
+<div class="youtubePlaylists">
 <div class="panel-group">
 	<form method="post" th:action="@{/add}" th:object="${addList}">
 	<div th:if="!${#lists.isEmpty(youtubePlaylistList)}" >	
@@ -86,13 +100,13 @@
       		</h4>
     		</div>
     		<div th:id="|collapse__${status.index + 1}__|" class="panel-collapse collapse">
-    		<div th:if="!${#lists.isEmpty(youtubePlaylist.getPlaylistItemLinkList())}" >
-      		<ul class="list-group">
-        		<li th:each="item, status : ${youtubePlaylist.getPlaylistItemLinkList()}" class="list-group-item">
-        		<input type="checkbox" th:field="*{playlistLinkList[__${status.index}__].link}" th:value="${item}" th:text="${item}"/> 
+    		<div th:if="!${#lists.isEmpty(youtubePlaylist.getPlaylistItemsLinksList())}" >
+      		<ul class="list-group" th:each="item, itemStatus : ${youtubePlaylist.getPlaylistItemsLinksList()}" >
+        		<li class="list-group-item">
+        			<input type="checkbox" th:field="*{addList[__${itemStatus.index}__].link}" th:value="${item}" th:text="${youtubePlaylist.getPlaylistItemsTitlesList().get(__${itemStatus.index}__)}"/>
         		</li>
         	</ul>
-      		<div class="panel-footer">Footer</div>
+      		<div class="panel-footer"></div>
       		</div>
     		</div>
   		</div>
@@ -102,33 +116,6 @@
 	</div>
 </form>
 </div>
-  
-<div>
-<form method="post" th:action="@{/add}" th:object="${addList}">
-	<div th:if="!${#lists.isEmpty(youtubePlaylistList)}" >
-	<table bgcolor="#404040">
-			<tr th:each="youtubePlaylist : ${youtubePlaylistList}">
-				<td th:text="${youtubePlaylist.getName()}"></td>
-				<td th:text="${youtubePlaylist.getVideosAmount()}"></td>
-				<td th:text="${youtubePlaylist.getId()}"></td>			
-				<td>
-				<div th:if="!${#lists.isEmpty(youtubePlaylist.getPlaylistItemLinkList())}" >	
-				<table>	
-				<tr th:each="item, status : ${youtubePlaylist.getPlaylistItemLinkList()}">
-					<td th:text="${item}" />
-					<td>
-					<input type="checkbox" th:field="*{playlistLinkList[__${status.index}__].link}" th:value="${item}"/> 
-					</td>
-				</tr>
-				</table>
-				</div>
-				</td>
-			</tr>
-		</table>
-	</div>
-<input type="hidden" th:value="${playlistName}" name="playlistName" />
-<input type="submit" value="Add"/>
-</form>
 </div>
 
 </body>
