@@ -10,7 +10,6 @@ import com.google.api.services.youtube.model.PlaylistItemListResponse;
 import com.google.api.services.youtube.model.PlaylistListResponse;
 import com.google.api.services.youtube.model.PlaylistSnippet;
 
-import playlist.controller.PlaylistController;
 import playlist.entity.PlaylistItemInfo;
 import playlist.entity.youtubePlaylist.YoutubePlaylist;
 import playlist.entity.youtubePlaylist.YoutubePlaylistInfo;
@@ -32,6 +31,7 @@ import org.springframework.stereotype.Repository;
 
 
 public class YoutubeUserRepository {
+<<<<<<< HEAD
 	
     public static String getChannelId(String userId){
     	String channelId = null;
@@ -46,25 +46,42 @@ public class YoutubeUserRepository {
 			   		)
 			   		.setApplicationName(
 		            "youtube-cmdline-user-playlists").build();
+=======
+
+
+    public static String getChannelId(String userId) throws IOException{
+    	String channelId = null;
+		    	
+    	Credential credential = Auth.getFlow().loadCredential(userId);  
+			try {
+				YouTube youtube = new YouTube.Builder(
+			    		Auth.HTTP_TRANSPORT, 
+			    		Auth.JSON_FACTORY, 
+			    		credential
+			    		)
+			    		.setApplicationName(
+			            "youtube-cmdline-user-playlists").build();
+>>>>>>> parent of 55a2df8... moved leftover logic from controllers to services
 				
-		    YouTube.Channels.List channelIdRequest = youtube.channels().list("id");
-			channelIdRequest = youtube.channels().list("id");
-			channelIdRequest.setMine(true);
-	        channelIdRequest.getId();
-	        ChannelListResponse channelIdResult = channelIdRequest.execute();
-	        channelId = channelIdResult.getItems().get(0).getId();
-	        channelId = channelId.replace("-", "");
+		    	YouTube.Channels.List channelIdRequest = youtube.channels().list("id");
+				channelIdRequest = youtube.channels().list("id");
+				channelIdRequest.setMine(true);
+		        channelIdRequest.getId();
+		        ChannelListResponse channelIdResult = channelIdRequest.execute();
+		        channelId = channelIdResult.getItems().get(0).getId();
+		        channelId = channelId.replace("-", "");
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-		if (channelId.isEmpty()){
-			PlaylistController.redirectToOauthLogin();
-		}
 			
 		return channelId;
     }
     
+<<<<<<< HEAD
     public static List<YoutubePlaylistInfo> fetchPlaylistsInfoList(String channelId, String userId) {
+=======
+    public List<YoutubePlaylistInfo> fetchPlaylistsInfoList(String channelId, String userId) throws IOException{
+>>>>>>> parent of 55a2df8... moved leftover logic from controllers to services
         List<YoutubePlaylistInfo> youtubePlaylistInfoList = new ArrayList<YoutubePlaylistInfo>();
        		
 	    List<YoutubePlaylist> playlists = fetchPlaylistList(userId);

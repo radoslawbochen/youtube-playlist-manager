@@ -9,9 +9,13 @@ import playlist.entity.youtubePlaylist.YoutubePlaylistInfo;
 
 public interface YoutubePlaylistService {
 
-	List<YoutubePlaylistInfo> findYoutubePlaylistsInfo();
+	List<YoutubePlaylistInfo> findYoutubePlaylistsInfo(String channelId) throws IOException;
 
+<<<<<<< HEAD
 	List<YoutubePlaylist> findYoutubePlaylists(String channelId, List<UsermadePlaylist> usermadePlaylistList) throws IOException;
+=======
+	List<YoutubePlaylist> findYoutubePlaylistsByChanellId(String channelId, List<UsermadePlaylist> usermadePlaylistList) throws IOException;
+>>>>>>> parent of 55a2df8... moved leftover logic from controllers to services
 
 	UsermadePlaylist findbyLink(String link);
 

@@ -4,9 +4,12 @@ import java.io.IOException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+<<<<<<< HEAD
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+=======
+>>>>>>> parent of 55a2df8... moved leftover logic from controllers to services
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.WebDataBinder;
@@ -35,12 +38,13 @@ public class ViewPlaylistController {
     public void initBinder(WebDataBinder binder) {
         binder.setAutoGrowCollectionLimit(2048);
     }
-    @Autowired
-    private UserService userService;
+    
 	@Autowired
 	private UsermadePlaylistService usermadePlaylistService;
 	@Autowired
 	private YoutubePlaylistService youtubePlaylistService;
+	@Autowired
+	private UserService userService;
 	
 	@RequestMapping(method = RequestMethod.GET)
     public String playlistView(
@@ -48,9 +52,11 @@ public class ViewPlaylistController {
     		@RequestParam(value = "playlist", required = false) String playlistName,
 			Model model
 			) throws IOException{		
+				String userId = Auth.getUserId(userService);
 				if(Auth.getFlow() == null){
 					return "redirect:/login";
 				}
+<<<<<<< HEAD
 				Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 				User user = userService.findUserByEmail(auth.getName());
 				String channelId = YoutubeUserRepository.getChannelId(Integer.toString(user.getId()));
@@ -58,6 +64,13 @@ public class ViewPlaylistController {
     			if (playlistName != null){
     				List<UsermadePlaylist> usermadePlaylistList = usermadePlaylistService.findByPlaylistName(playlistName);
     				List<YoutubePlaylist> youtubePlaylistList = youtubePlaylistService.findYoutubePlaylists(channelId, usermadePlaylistList);
+=======
+				String channelId = YoutubeUserRepository.getChannelId(userId);				
+				
+    			if (playlistName != null){
+    				List<UsermadePlaylist> usermadePlaylistList = usermadePlaylistService.findByChannelIdAndPlaylistName(channelId, playlistName);
+    				List<YoutubePlaylist> youtubePlaylistList = youtubePlaylistService.findYoutubePlaylistsByChanellId(channelId, usermadePlaylistList);
+>>>>>>> parent of 55a2df8... moved leftover logic from controllers to services
     				
     				model.addAttribute("playlistName", playlistName);
     				model.addAttribute("usermadePlaylist", new UsermadePlaylistWrapper());
@@ -67,8 +80,8 @@ public class ViewPlaylistController {
     				
     				return "playlistViewA";
     			} else {
-    				model.addAttribute("youtubePlaylistInfoList", youtubePlaylistService.findYoutubePlaylistsInfo());
-					model.addAttribute("usermadePlaylistInfoList", usermadePlaylistService.findDistinctPlaylistName());
+    				model.addAttribute("youtubePlaylistInfoList", youtubePlaylistService.findYoutubePlaylistsInfo(channelId));
+					model.addAttribute("usermadePlaylistInfoList", usermadePlaylistService.findDistinctPlaylistNameByChannelId(channelId));
 					
 					return "playlistView";
     			}
@@ -87,7 +100,7 @@ public class ViewPlaylistController {
 		    
 			return "redirect:/viewPlaylist" + getPlaylist;
 		} else if (deletePlaylistName != null) {
-			usermadePlaylistService.deleteByPlaylistName(deletePlaylistName);
+			usermadePlaylistService.deleteByChannelIdAndPlaylistName(channelId, deletePlaylistName);
 			
 			return "redirect:/viewPlaylist";
 		}
@@ -109,10 +122,11 @@ public class ViewPlaylistController {
     public String add(
     		@ModelAttribute(value = "addList") AddListWrapper addListWrapper,
     		@RequestParam(value = "playlistName", required = false) String playlistName
-    		) throws IOException{		  
-    	
-			usermadePlaylistService.add(addListWrapper.getAddList(), playlistName);
-		
+    		) throws IOException{
+		  
+		String channelId = YoutubeUserRepository.getChannelId(Auth.getUserId(userService));
+		usermadePlaylistService.add(addListWrapper.getAddList(), playlistName, channelId);
+
     	return "redirect:/viewPlaylist?playlist=" + playlistName;
     }    
 }

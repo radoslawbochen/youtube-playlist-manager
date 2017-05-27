@@ -31,8 +31,9 @@ import javax.servlet.http.HttpSession;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+
 public class Auth {
-	
+
   HttpSession session;
 	
   static TokenResponse response; 
@@ -55,7 +56,7 @@ public class Auth {
     return flow;
   }
 
-  public static void authenticate(
+  public static void receiveCode(
 		  UserService userService,
 		  String code
 		  ) throws IOException {
@@ -79,9 +80,9 @@ public class Auth {
   
   public static String getUserId(UserService userService){
 	  Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-	  String email = auth.getName();
-	  User user = userService.findUserByEmail(email);
-	  return Integer.toString(user.getId()); 
+	  User user = userService.findUserByEmail(auth.getName());
+	  
+	  return String.valueOf(user.getId()); 
   }
   
 }

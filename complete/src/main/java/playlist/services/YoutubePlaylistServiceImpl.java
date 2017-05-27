@@ -1,5 +1,6 @@
 package playlist.services;
 
+import java.io.IOException;
 import java.util.List;
 
 
@@ -13,7 +14,6 @@ import playlist.entity.usermadePlaylist.UsermadePlaylist;
 import playlist.entity.youtubePlaylist.YoutubePlaylist;
 import playlist.entity.youtubePlaylist.YoutubePlaylistInfo;
 import playlist.repositories.YoutubeUserRepository;
-import playlist.security.Auth;
 
 @Service
 public class YoutubePlaylistServiceImpl implements YoutubePlaylistService {
@@ -26,9 +26,10 @@ public class YoutubePlaylistServiceImpl implements YoutubePlaylistService {
 	UserService userService;
 	
 	@Override
-	public List<YoutubePlaylistInfo> findYoutubePlaylistsInfo() {		
+	public List<YoutubePlaylistInfo> findYoutubePlaylistsInfo(String channelId) throws IOException {		
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		User user = userService.findUserByEmail(auth.getName());
+<<<<<<< HEAD
 		String userId = String.valueOf(user.getId());
 		String channelId = YoutubeUserRepository.getChannelId(userId);
 		System.out.println("DUPADUPADUPADUPADUPADUPADUPADUPADUPADUPADUPADUPA " + userId);
@@ -38,6 +39,15 @@ public class YoutubePlaylistServiceImpl implements YoutubePlaylistService {
 	@Override
 	public List<YoutubePlaylist> findYoutubePlaylists(String channelId, List<UsermadePlaylist> usermadePlaylists) {	
 		//String channelId = YoutubeUserRepository.getChannelId(Auth.getUserId(userService));
+=======
+		String userId = String.valueOf(user.getId()); 
+		
+		return youtubeUserRepo.fetchPlaylistsInfoList(channelId, userId);
+	}
+
+	@Override
+	public List<YoutubePlaylist> findYoutubePlaylistsByChanellId(String channelId, List<UsermadePlaylist> usermadePlaylists) {		
+>>>>>>> parent of 55a2df8... moved leftover logic from controllers to services
 		List<YoutubePlaylist> youtubePlaylists = YoutubeUserRepository.fetchPlaylistList(channelId);
 				
 		for (UsermadePlaylist usermadePlaylist : usermadePlaylists){
