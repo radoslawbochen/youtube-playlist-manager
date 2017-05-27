@@ -1,6 +1,5 @@
 package playlist.services;
 
-import java.io.IOException;
 import java.util.List;
 
 
@@ -14,6 +13,7 @@ import playlist.entity.usermadePlaylist.UsermadePlaylist;
 import playlist.entity.youtubePlaylist.YoutubePlaylist;
 import playlist.entity.youtubePlaylist.YoutubePlaylistInfo;
 import playlist.repositories.YoutubeUserRepository;
+import playlist.security.Auth;
 
 @Service
 public class YoutubePlaylistServiceImpl implements YoutubePlaylistService {
@@ -28,16 +28,18 @@ public class YoutubePlaylistServiceImpl implements YoutubePlaylistService {
 	UserService userService;
 	
 	@Override
-	public List<YoutubePlaylistInfo> findYoutubePlaylistsInfo(String channelId) throws IOException {		
+	public List<YoutubePlaylistInfo> findYoutubePlaylistsInfo() {		
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		User user = userService.findUserByEmail(auth.getName());
 		String userId = String.valueOf(user.getId()); 
+		String channelId = YoutubeUserRepository.getChannelId(Auth.getUserId(userService));
 		
 		return youtubeUserRepo.fetchPlaylistsInfoList(channelId, userId);
 	}
 
 	@Override
-	public List<YoutubePlaylist> findYoutubePlaylistsByChanellId(String channelId, List<UsermadePlaylist> usermadePlaylists) {		
+	public List<YoutubePlaylist> findYoutubePlaylists(List<UsermadePlaylist> usermadePlaylists) {	
+		String channelId = YoutubeUserRepository.getChannelId(Auth.getUserId(userService));
 		List<YoutubePlaylist> youtubePlaylists = YoutubeUserRepository.fetchPlaylistList(channelId);
 				
 		for (UsermadePlaylist usermadePlaylist : usermadePlaylists){

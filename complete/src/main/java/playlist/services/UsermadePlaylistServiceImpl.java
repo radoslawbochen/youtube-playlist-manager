@@ -14,16 +14,22 @@ import playlist.entity.PlaylistItemInfo;
 import playlist.entity.usermadePlaylist.UsermadePlaylist;
 import playlist.entity.usermadePlaylist.UsermadePlaylistInfo;
 import playlist.repositories.UsermadePlaylistRepository;
+import playlist.repositories.YoutubeUserRepository;
+import playlist.security.Auth;
 
 @Service
 public class UsermadePlaylistServiceImpl implements UsermadePlaylistService {
 
 	@Autowired
 	private UsermadePlaylistRepository usermadePlaylistRepo;
+	@Autowired
+	private UserService userService;
 	
 	
 	@Override
-	public List<UsermadePlaylist> findByChannelIdAndPlaylistName(String channelId, String playlistName) {
+	public List<UsermadePlaylist> findByPlaylistName(String playlistName) {
+		String channelId = YoutubeUserRepository.getChannelId(Auth.getUserId(userService));
+
 		List<UsermadePlaylist> usermadePlaylistList = new ArrayList<UsermadePlaylist>();
 		
 		for (UsermadePlaylist usermadePlaylist : this.usermadePlaylistRepo.findByChannelIdAndPlaylistName(channelId, playlistName)) {
@@ -41,7 +47,9 @@ public class UsermadePlaylistServiceImpl implements UsermadePlaylistService {
 	}
 
 	@Override
-	public List<UsermadePlaylistInfo> findDistinctPlaylistNameByChannelId(String channelId) {
+	public List<UsermadePlaylistInfo> findDistinctPlaylistName() {
+		String channelId = YoutubeUserRepository.getChannelId(Auth.getUserId(userService));
+
 		List<UsermadePlaylist> userList = usermadePlaylistRepo.findDistinctPlaylistNameByChannelId(channelId);
 		List<UsermadePlaylistInfo> userPlaylistList = new ArrayList<>();
 		Iterator<UsermadePlaylist> itr = userList.iterator();
@@ -64,7 +72,9 @@ public class UsermadePlaylistServiceImpl implements UsermadePlaylistService {
 	}
 
 	@Override
-	public void deleteByChannelIdAndPlaylistName(String channelId, String playlistName) {
+	public void deleteByPlaylistName(String playlistName) {
+		String channelId = YoutubeUserRepository.getChannelId(Auth.getUserId(userService));
+
 		this.usermadePlaylistRepo.deleteByChannelIdAndPlaylistName(channelId, playlistName);
 	}
 
@@ -74,7 +84,9 @@ public class UsermadePlaylistServiceImpl implements UsermadePlaylistService {
 	}
 
 	@Override
-	public void add(ArrayList<String> itemsInfoList, String playlistName, String channelId){
+	public void add(ArrayList<String> itemsInfoList, String playlistName){		
+		String channelId = YoutubeUserRepository.getChannelId(Auth.getUserId(userService));
+		
 		List<PlaylistItemInfo> playlistItemInfoList = new ArrayList<>();
 		List<UsermadePlaylist> usermadePlaylists = new ArrayList<UsermadePlaylist>();
 		

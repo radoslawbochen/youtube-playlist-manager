@@ -9,9 +9,9 @@ import playlist.entity.youtubePlaylist.YoutubePlaylistInfo;
 
 public interface YoutubePlaylistService {
 
-	List<YoutubePlaylistInfo> findYoutubePlaylistsInfo(String channelId) throws IOException;
+	List<YoutubePlaylistInfo> findYoutubePlaylistsInfo();
 
-	List<YoutubePlaylist> findYoutubePlaylistsByChanellId(String channelId, List<UsermadePlaylist> usermadePlaylistList) throws IOException;
+	List<YoutubePlaylist> findYoutubePlaylists(List<UsermadePlaylist> usermadePlaylistList) throws IOException;
 
 	UsermadePlaylist findbyLink(String link);
 

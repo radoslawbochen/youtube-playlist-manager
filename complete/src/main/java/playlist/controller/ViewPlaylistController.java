@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.WebDataBinder;
@@ -23,6 +24,7 @@ import playlist.services.UserService;
 import playlist.services.UsermadePlaylistService;
 import playlist.services.YoutubePlaylistService;
 
+@PreAuthorize(value = "default")
 @Controller
 @RequestMapping("/viewPlaylist")
 public class ViewPlaylistController {
@@ -31,28 +33,25 @@ public class ViewPlaylistController {
     public void initBinder(WebDataBinder binder) {
         binder.setAutoGrowCollectionLimit(2048);
     }
-    
+    @Autowired
+    private UserService userService;
 	@Autowired
 	private UsermadePlaylistService usermadePlaylistService;
 	@Autowired
 	private YoutubePlaylistService youtubePlaylistService;
-	@Autowired
-	private UserService userService;
 	
 	@RequestMapping(method = RequestMethod.GET)
     public String playlistView(
     		@RequestParam(value = "playlist", required = false) String playlistName,
 			Model model
 			) throws IOException{		
-				String userId = Auth.getUserId(userService);
 				if(Auth.getFlow() == null){
 					return "redirect:/login";
 				}
-				String channelId = YoutubeUserRepository.getChannelId(userId);				
 				
     			if (playlistName != null){
-    				List<UsermadePlaylist> usermadePlaylistList = usermadePlaylistService.findByChannelIdAndPlaylistName(channelId, playlistName);
-    				List<YoutubePlaylist> youtubePlaylistList = youtubePlaylistService.findYoutubePlaylistsByChanellId(channelId, usermadePlaylistList);
+    				List<UsermadePlaylist> usermadePlaylistList = usermadePlaylistService.findByPlaylistName(playlistName);
+    				List<YoutubePlaylist> youtubePlaylistList = youtubePlaylistService.findYoutubePlaylists(usermadePlaylistList);
     				
     				model.addAttribute("playlistName", playlistName);
     				model.addAttribute("usermadePlaylist", new UsermadePlaylistWrapper());
@@ -62,8 +61,8 @@ public class ViewPlaylistController {
     				
     				return "playlistViewA";
     			} else {
-    				model.addAttribute("youtubePlaylistInfoList", youtubePlaylistService.findYoutubePlaylistsInfo(channelId));
-					model.addAttribute("usermadePlaylistInfoList", usermadePlaylistService.findDistinctPlaylistNameByChannelId(channelId));
+    				model.addAttribute("youtubePlaylistInfoList", youtubePlaylistService.findYoutubePlaylistsInfo());
+					model.addAttribute("usermadePlaylistInfoList", usermadePlaylistService.findDistinctPlaylistName());
 					
 					return "playlistView";
     			}
@@ -82,7 +81,7 @@ public class ViewPlaylistController {
 		    
 			return "redirect:/viewPlaylist" + getPlaylist;
 		} else if (deletePlaylistName != null) {
-			usermadePlaylistService.deleteByChannelIdAndPlaylistName(channelId, deletePlaylistName);
+			usermadePlaylistService.deleteByPlaylistName(deletePlaylistName);
 			
 			return "redirect:/viewPlaylist";
 		}
@@ -104,11 +103,10 @@ public class ViewPlaylistController {
     public String add(
     		@ModelAttribute(value = "addList") AddListWrapper addListWrapper,
     		@RequestParam(value = "playlistName", required = false) String playlistName
-    		) throws IOException{
-		  
-		String channelId = YoutubeUserRepository.getChannelId(Auth.getUserId(userService));
-		usermadePlaylistService.add(addListWrapper.getAddList(), playlistName, channelId);
-
+    		) throws IOException{		  
+    	
+			usermadePlaylistService.add(addListWrapper.getAddList(), playlistName);
+		
     	return "redirect:/viewPlaylist?playlist=" + playlistName;
     }    
 }

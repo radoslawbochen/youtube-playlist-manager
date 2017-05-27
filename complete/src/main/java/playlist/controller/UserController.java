@@ -31,7 +31,11 @@ public class UserController {
 	}
 	
 	@RequestMapping(value = "/login", method = RequestMethod.GET)
-	public String showLogin(){
+	public String showLogin(){		
+		//Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		//if (auth.isAuthenticated()){
+		//	return "/user";
+		//}
 		
 		return "login";
 	}

@@ -8,15 +8,16 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.view.RedirectView;
 
 import playlist.services.UserService;
 
 @Controller
-public class PlaylistController {
-	
-	@Autowired
-	private UserService userService;
+public class PlaylistController {	
 				
+	@Autowired
+	UserService service;
+	
 	@RequestMapping(value = "/")
 	public String index() {
 		
@@ -31,10 +32,15 @@ public class PlaylistController {
 	
     @RequestMapping(value = "/oauth2callback", method = RequestMethod.GET)
     public String recieveCode(@RequestParam("code") String code) throws IOException{
-    	playlist.security.Auth.receiveCode(userService, code);
+    	playlist.security.Auth.authenticate(service, code);
     	
     	return "redirect:/user";
     }    
 	
+    public static RedirectView redirectToOauthLogin() {
+    	
+    	return new RedirectView("/login");
+    }
+    
 }
     

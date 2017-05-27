@@ -10,6 +10,7 @@ import com.google.api.services.youtube.model.PlaylistItemListResponse;
 import com.google.api.services.youtube.model.PlaylistListResponse;
 import com.google.api.services.youtube.model.PlaylistSnippet;
 
+import playlist.controller.PlaylistController;
 import playlist.entity.PlaylistItemInfo;
 import playlist.entity.youtubePlaylist.YoutubePlaylist;
 import playlist.entity.youtubePlaylist.YoutubePlaylistInfo;
@@ -33,35 +34,36 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class YoutubeUserRepository {
 
-
-    public static String getChannelId(String userId) throws IOException{
+    public static String getChannelId(String userId){
     	String channelId = null;
-		    	
-    	Credential credential = Auth.getFlow().loadCredential(userId);  
-			try {
-				YouTube youtube = new YouTube.Builder(
-			    		Auth.HTTP_TRANSPORT, 
-			    		Auth.JSON_FACTORY, 
-			    		credential
-			    		)
-			    		.setApplicationName(
-			            "youtube-cmdline-user-playlists").build();
+		try {		    	
+			Credential credential = Auth.getFlow().loadCredential(userId);  
+			YouTube youtube = new YouTube.Builder(
+			    	Auth.HTTP_TRANSPORT, 
+			   		Auth.JSON_FACTORY, 
+			   		credential
+			   		)
+			   		.setApplicationName(
+		            "youtube-cmdline-user-playlists").build();
 				
-		    	YouTube.Channels.List channelIdRequest = youtube.channels().list("id");
-				channelIdRequest = youtube.channels().list("id");
-				channelIdRequest.setMine(true);
-		        channelIdRequest.getId();
-		        ChannelListResponse channelIdResult = channelIdRequest.execute();
-		        channelId = channelIdResult.getItems().get(0).getId();
-		        channelId = channelId.replace("-", "");
+		    YouTube.Channels.List channelIdRequest = youtube.channels().list("id");
+			channelIdRequest = youtube.channels().list("id");
+			channelIdRequest.setMine(true);
+	        channelIdRequest.getId();
+	        ChannelListResponse channelIdResult = channelIdRequest.execute();
+	        channelId = channelIdResult.getItems().get(0).getId();
+	        channelId = channelId.replace("-", "");
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+		if (channelId.isEmpty()){
+			PlaylistController.redirectToOauthLogin();
+		}
 			
 		return channelId;
     }
     
-    public List<YoutubePlaylistInfo> fetchPlaylistsInfoList(String channelId, String userId) throws IOException{
+    public List<YoutubePlaylistInfo> fetchPlaylistsInfoList(String channelId, String userId) {
         List<YoutubePlaylistInfo> youtubePlaylistInfoList = new ArrayList<YoutubePlaylistInfo>();
        		
 	    List<YoutubePlaylist> playlists = fetchPlaylistList(userId);
