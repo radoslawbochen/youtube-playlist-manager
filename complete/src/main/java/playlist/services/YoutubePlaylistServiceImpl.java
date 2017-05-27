@@ -18,8 +18,6 @@ import playlist.security.Auth;
 @Service
 public class YoutubePlaylistServiceImpl implements YoutubePlaylistService {
 	
-	@Autowired
-	YoutubeUserRepository youtubeUserRepo;
 	
 	@Autowired 
 	UsermadePlaylistService usermadePlaylistService;
@@ -31,15 +29,15 @@ public class YoutubePlaylistServiceImpl implements YoutubePlaylistService {
 	public List<YoutubePlaylistInfo> findYoutubePlaylistsInfo() {		
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		User user = userService.findUserByEmail(auth.getName());
-		String userId = String.valueOf(user.getId()); 
-		String channelId = YoutubeUserRepository.getChannelId(Auth.getUserId(userService));
-		
-		return youtubeUserRepo.fetchPlaylistsInfoList(channelId, userId);
+		String userId = String.valueOf(user.getId());
+		String channelId = YoutubeUserRepository.getChannelId(userId);
+		System.out.println("DUPADUPADUPADUPADUPADUPADUPADUPADUPADUPADUPADUPA " + userId);
+		return YoutubeUserRepository.fetchPlaylistsInfoList(channelId, userId);
 	}
 
 	@Override
-	public List<YoutubePlaylist> findYoutubePlaylists(List<UsermadePlaylist> usermadePlaylists) {	
-		String channelId = YoutubeUserRepository.getChannelId(Auth.getUserId(userService));
+	public List<YoutubePlaylist> findYoutubePlaylists(String channelId, List<UsermadePlaylist> usermadePlaylists) {	
+		//String channelId = YoutubeUserRepository.getChannelId(Auth.getUserId(userService));
 		List<YoutubePlaylist> youtubePlaylists = YoutubeUserRepository.fetchPlaylistList(channelId);
 				
 		for (UsermadePlaylist usermadePlaylist : usermadePlaylists){

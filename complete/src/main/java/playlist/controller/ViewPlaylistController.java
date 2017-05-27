@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.WebDataBinder;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import playlist.entity.AddListWrapper;
+import playlist.entity.User;
 import playlist.entity.usermadePlaylist.UsermadePlaylist;
 import playlist.entity.usermadePlaylist.UsermadePlaylistWrapper;
 import playlist.entity.youtubePlaylist.YoutubePlaylist;
@@ -24,7 +27,6 @@ import playlist.services.UserService;
 import playlist.services.UsermadePlaylistService;
 import playlist.services.YoutubePlaylistService;
 
-@PreAuthorize(value = "default")
 @Controller
 @RequestMapping("/viewPlaylist")
 public class ViewPlaylistController {
@@ -42,16 +44,20 @@ public class ViewPlaylistController {
 	
 	@RequestMapping(method = RequestMethod.GET)
     public String playlistView(
+    		
     		@RequestParam(value = "playlist", required = false) String playlistName,
 			Model model
 			) throws IOException{		
 				if(Auth.getFlow() == null){
 					return "redirect:/login";
 				}
+				Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+				User user = userService.findUserByEmail(auth.getName());
+				String channelId = YoutubeUserRepository.getChannelId(Integer.toString(user.getId()));
 				
     			if (playlistName != null){
     				List<UsermadePlaylist> usermadePlaylistList = usermadePlaylistService.findByPlaylistName(playlistName);
-    				List<YoutubePlaylist> youtubePlaylistList = youtubePlaylistService.findYoutubePlaylists(usermadePlaylistList);
+    				List<YoutubePlaylist> youtubePlaylistList = youtubePlaylistService.findYoutubePlaylists(channelId, usermadePlaylistList);
     				
     				model.addAttribute("playlistName", playlistName);
     				model.addAttribute("usermadePlaylist", new UsermadePlaylistWrapper());

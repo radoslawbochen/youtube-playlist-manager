@@ -11,7 +11,7 @@ public interface YoutubePlaylistService {
 
 	List<YoutubePlaylistInfo> findYoutubePlaylistsInfo();
 
-	List<YoutubePlaylist> findYoutubePlaylists(List<UsermadePlaylist> usermadePlaylistList) throws IOException;
+	List<YoutubePlaylist> findYoutubePlaylists(String channelId, List<UsermadePlaylist> usermadePlaylistList) throws IOException;
 
 	UsermadePlaylist findbyLink(String link);
 

@@ -92,15 +92,17 @@ public class UsermadePlaylistServiceImpl implements UsermadePlaylistService {
 		
 		for (String itemInfo : itemsInfoList){
 				if(itemInfo != null){
+					String link = itemInfo.substring(0, 10);
+					String videoTitle = itemInfo.substring(10);
 					String[] lines = itemInfo.split("\n");
 					playlistItemInfoList.add(new PlaylistItemInfo(lines[0], lines[1]));
 					usermadePlaylists.add(new UsermadePlaylist(
 							10L,
 							channelId,
 							playlistName, 
-							lines[1],
+							link,
 							0,
-							lines[0]
+							videoTitle
 							));
 			}			
 		}	

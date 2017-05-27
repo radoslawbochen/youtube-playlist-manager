@@ -31,13 +31,14 @@ import org.springframework.stereotype.Repository;
  */
 
 
-@Repository
 public class YoutubeUserRepository {
-
+	
     public static String getChannelId(String userId){
     	String channelId = null;
 		try {		    	
-			Credential credential = Auth.getFlow().loadCredential(userId);  
+			Credential credential = Auth.getFlow().loadCredential(userId); 
+			System.out.println(credential.toString());
+
 			YouTube youtube = new YouTube.Builder(
 			    	Auth.HTTP_TRANSPORT, 
 			   		Auth.JSON_FACTORY, 
@@ -63,7 +64,7 @@ public class YoutubeUserRepository {
 		return channelId;
     }
     
-    public List<YoutubePlaylistInfo> fetchPlaylistsInfoList(String channelId, String userId) {
+    public static List<YoutubePlaylistInfo> fetchPlaylistsInfoList(String channelId, String userId) {
         List<YoutubePlaylistInfo> youtubePlaylistInfoList = new ArrayList<YoutubePlaylistInfo>();
        		
 	    List<YoutubePlaylist> playlists = fetchPlaylistList(userId);
@@ -196,94 +197,5 @@ public class YoutubeUserRepository {
 		
 		return playlistItemsInfoList;		
 	}
-	
-	static List<String> getIds(String playlistId, Credential credential){
-		List<String> idsList = new ArrayList<>();
-		try {
-			YouTube youtube = new YouTube.Builder(
-		    		Auth.HTTP_TRANSPORT, 
-		    		Auth.JSON_FACTORY, 
-		    		credential
-		    		)
-		    		.setApplicationName(
-		            "youtube-cmdline-user-playlists").build();
-			
-		List<PlaylistItem> playlistItemList = new ArrayList<PlaylistItem>();
-		playlistItemList.clear();
-
-        YouTube.PlaylistItems.List playlistItemRequest;
-			playlistItemRequest = youtube.playlistItems().list("id,contentDetails,snippet");
 		
-        playlistItemRequest.setPlaylistId(playlistId);
-
-        playlistItemRequest.setFields(
-                "items(contentDetails/videoId),nextPageToken,pageInfo");
-
-        String nextToken = "";
-        
-        do {
-            playlistItemRequest.setPageToken(nextToken);
-            PlaylistItemListResponse playlistItemResult;
-			playlistItemResult = playlistItemRequest.execute();
-            playlistItemList.addAll(playlistItemResult.getItems());
-            nextToken = playlistItemResult.getNextPageToken();
-        } while (nextToken != null);
-        
-        Iterator<PlaylistItem> itr = playlistItemList.iterator();
-        while(itr.hasNext()){
-           PlaylistItem playlistItem = itr.next();
-           idsList.add(new String(playlistItem.getContentDetails().getVideoId()));
-        }
-        
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
-		return idsList;
-	}
-	
-	static List<String> getTitles(String playlistId, Credential credential){
-		List<String> titlesList = new ArrayList<>();
-		try {
-			YouTube youtube = new YouTube.Builder(
-		    		Auth.HTTP_TRANSPORT, 
-		    		Auth.JSON_FACTORY, 
-		    		credential
-		    		)
-		    		.setApplicationName(
-		            "youtube-cmdline-user-playlists").build();
-			
-		List<PlaylistItem> playlistItemList = new ArrayList<PlaylistItem>();
-		playlistItemList.clear();
-
-        YouTube.PlaylistItems.List playlistItemRequest;
-		playlistItemRequest = youtube.playlistItems().list("id,contentDetails,snippet");
-		
-        playlistItemRequest.setPlaylistId(playlistId);
-
-        playlistItemRequest.setFields(
-                "items(snippet/title),nextPageToken,pageInfo");
-
-        String nextToken = "";
-
-        do {
-            playlistItemRequest.setPageToken(nextToken);
-            PlaylistItemListResponse playlistItemResult;
-			playlistItemResult = playlistItemRequest.execute();
-            playlistItemList.addAll(playlistItemResult.getItems());
-            nextToken = playlistItemResult.getNextPageToken();
-        } while (nextToken != null);
-        
-        Iterator<PlaylistItem> itr = playlistItemList.iterator();
-        while(itr.hasNext()){
-           PlaylistItem playlistItem = itr.next();
-           titlesList.add(new String(playlistItem.getSnippet().getTitle()));
-        }
-        } catch (IOException e1) {
-			e1.printStackTrace();
-		}
-		
-		return titlesList;
-	}
-	
-	
 }
