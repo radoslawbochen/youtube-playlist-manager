@@ -1,17 +1,18 @@
 package playlist.services;
 
+import java.io.IOException;
 import java.util.List;
 
-import playlist.entity.User;
-import playlist.entity.YoutubePlaylist;
-import playlist.entity.YoutubePlaylistInfo;
+import playlist.entity.usermadePlaylist.UsermadePlaylist;
+import playlist.entity.youtubePlaylist.YoutubePlaylist;
+import playlist.entity.youtubePlaylist.YoutubePlaylistInfo;
 
 public interface YoutubePlaylistService {
 
-	List<YoutubePlaylistInfo> findYoutubePlaylistsInfo();
+	List<YoutubePlaylistInfo> findYoutubePlaylistsInfo(String channelId) throws IOException;
 
-	List<YoutubePlaylist> findYoutubePlaylistsByChanellId(String channelId);
+	List<YoutubePlaylist> findYoutubePlaylistsByChanellId(String channelId, List<UsermadePlaylist> usermadePlaylistList) throws IOException;
 
-	User findbyLink(String link);
-	
+	UsermadePlaylist findbyLink(String link);
+
 }

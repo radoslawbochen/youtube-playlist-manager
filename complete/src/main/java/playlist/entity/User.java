@@ -1,5 +1,6 @@
 package playlist.entity;
 
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -7,74 +8,78 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-@Entity
-@Table(name = "playlist")
-public class User {
-	
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column
-	private Long id;
-	@Column
-	private String channelId;
-	@Column
-	private String playlistName;
-	@Column
-	private String link;
-	@Column
-	private int timesRepeated;
-	
-	public User() { }
-	
-	public User(Long id){
-		super();
-		this.id = id;
-	}
-	
-	public User(Long id, String channelId, String playlistName, String link, int timesRepeated) {
-		super();
-		this.id = id;
-		this.channelId = channelId;
-		this.playlistName = playlistName;
-		this.link = link;
-		this.timesRepeated = timesRepeated;
-	}
-	
-	public User(Long id, String channelId, String playlistName){
-		super();
-		this.id = id;
-		this.channelId = channelId;
-		this.playlistName = playlistName;
-	}
+import org.hibernate.validator.constraints.Email;
+import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.NotEmpty;
+import org.springframework.data.annotation.Transient;
 
-	public Long getId() {
+
+@Entity
+@Table(name = "user")
+public class User {
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name = "user_id")
+	private int id;
+	
+	@Column(name = "email")
+	@Email(message = "*Please provide a valid Email")
+	@NotEmpty(message = "*Please provide an email")
+	private String email;
+	
+	@Column(name = "password")
+	@Length(min = 5, message = "*Your password must have at least 5 characters")
+	@NotEmpty(message = "*Please provide your password")
+	@Transient
+	private String password;
+	
+	@Column(name = "name")
+	@NotEmpty(message = "*Please provide your name")
+	private String name;
+	
+	@Column(name = "active")
+	private int active;
+	
+
+	public int getId() {
 		return id;
 	}
-	public void setId(Long id) {
+
+	public void setId(int id) {
 		this.id = id;
 	}
-	public String getPlaylistName() {
-		return playlistName;
+
+	public String getPassword() {
+		return password;
 	}
-	public void setPlaylistName(String playlistName) {
-		this.playlistName = playlistName;
+
+	public void setPassword(String password) {
+		this.password = password;
 	}
-	public String getLink() {
-		return link;
+
+	public String getName() {
+		return name;
 	}
-	public void setLink(String link) {
-		this.link = link;
+
+	public void setName(String name) {
+		this.name = name;
 	}
-	public int getTimesRepeated() {
-		return timesRepeated;
+	
+	public String getEmail() {
+		return email;
 	}
-	public void setTimesRepeated(int timesRepeated) {
-		this.timesRepeated = timesRepeated;
+
+	public void setEmail(String email) {
+		this.email = email;
 	}
-	public String getChannelId() {
-		return channelId;
+
+	public int getActive() {
+		return active;
 	}
-	public void setChannelId(String channelId) {
-		this.channelId = channelId;
+
+	public void setActive(int active) {
+		this.active = active;
 	}
+
 }

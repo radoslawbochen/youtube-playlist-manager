@@ -3,33 +3,24 @@ package playlist.services;
 import java.util.ArrayList;
 import java.util.List;
 
-import playlist.entity.PlaylistLink;
-import playlist.entity.User;
-import playlist.entity.UsermadePlaylist;
-import playlist.entity.UsermadePlaylistInfo;
+import playlist.entity.usermadePlaylist.UsermadePlaylist;
+import playlist.entity.usermadePlaylist.UsermadePlaylistInfo;
 
 public interface UsermadePlaylistService {
 
-	List<User> findByChannelIdAndPlaylistName(String channelId, String playlistName);
+	List<UsermadePlaylist> findByChannelIdAndPlaylistName(String channelId, String playlistName);
 
-	User saveUser(User user);
+	void saveUsermadePlaylist(UsermadePlaylist usermadePlaylist);
 
-	List<User> findDistinctByChannelId(String channelId);
-
-	List<UsermadePlaylistInfo> findDistinctPlaylistNameByChannelId();
+	List<UsermadePlaylistInfo> findDistinctPlaylistNameByChannelId(String channelId);
 
 	void deleteByChannelIdAndPlaylistName(String channelId, String playlistName);
 
 	void deleteById(Long i);
-
-	void add(String channelId, String playlistName, String link);
 	
-	ArrayList<User> findAllByLink(List<String> userId);
+	void add(ArrayList<String> arrayList, String addPlaylistName, String channelId);
 
-	User findbyLink(String link);
+	void delete(ArrayList<UsermadePlaylist> userList, String playlistName);
 
-	void add(List<PlaylistLink> playlistLinkList, String addPlaylistName);
-
-	void delete(ArrayList<User> userList, String playlistName);
-	
+	void addAll(ArrayList<UsermadePlaylist> usermadePlaylists);	
 }

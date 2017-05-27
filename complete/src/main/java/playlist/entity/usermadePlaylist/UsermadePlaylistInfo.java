@@ -1,6 +1,4 @@
-package playlist.entity;
-
-import javax.persistence.Entity;
+package playlist.entity.usermadePlaylist;
 
 public class UsermadePlaylistInfo{
 

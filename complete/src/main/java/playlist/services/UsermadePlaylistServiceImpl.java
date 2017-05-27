@@ -5,17 +5,14 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import playlist.controller.MyUploads;
-import playlist.entity.PlaylistLink;
-import playlist.entity.User;
-import playlist.entity.UsermadePlaylist;
-import playlist.entity.UsermadePlaylistInfo;
+import playlist.entity.PlaylistItemInfo;
+import playlist.entity.usermadePlaylist.UsermadePlaylist;
+import playlist.entity.usermadePlaylist.UsermadePlaylistInfo;
 import playlist.repositories.UsermadePlaylistRepository;
 
 @Service
@@ -26,42 +23,33 @@ public class UsermadePlaylistServiceImpl implements UsermadePlaylistService {
 	
 	
 	@Override
-	public List<User> findByChannelIdAndPlaylistName(String channelId, String playlistName) {
-		Iterator<User> itr = this.usermadePlaylistRepo.findByChannelIdAndPlaylistName(channelId, playlistName).iterator();
-		List<User> usermadePlaylistList = new ArrayList<User>();
-		System.out.println(usermadePlaylistList.size());
-		while(itr.hasNext()){
-			User user = itr.next();
-			if(user.getLink() != null){
-				usermadePlaylistList.add(user);
+	public List<UsermadePlaylist> findByChannelIdAndPlaylistName(String channelId, String playlistName) {
+		List<UsermadePlaylist> usermadePlaylistList = new ArrayList<UsermadePlaylist>();
+		
+		for (UsermadePlaylist usermadePlaylist : this.usermadePlaylistRepo.findByChannelIdAndPlaylistName(channelId, playlistName)) {
+			if(usermadePlaylist.getLink() != null){
+				usermadePlaylistList.add(usermadePlaylist);
 			}
 		}
-		System.out.println(usermadePlaylistList.size());
-
+		
 		return usermadePlaylistList;
 	}
 	
 	@Override
-	public User saveUser(User user){
-		return this.usermadePlaylistRepo.save(user);
+	public void saveUsermadePlaylist(UsermadePlaylist usermadePlaylist){
+		this.usermadePlaylistRepo.save(usermadePlaylist);
 	}
 
 	@Override
-	public List<User> findDistinctByChannelId(String channelId) {
-		return this.usermadePlaylistRepo.findDistinctByChannelId(channelId);
-	}
-
-	@Override
-	public List<UsermadePlaylistInfo> findDistinctPlaylistNameByChannelId() {
-		List<User> userList = usermadePlaylistRepo.findDistinctPlaylistNameByChannelId(MyUploads.getChannelId());
-		System.out.print("ChannelId: " +  MyUploads.getChannelId());
+	public List<UsermadePlaylistInfo> findDistinctPlaylistNameByChannelId(String channelId) {
+		List<UsermadePlaylist> userList = usermadePlaylistRepo.findDistinctPlaylistNameByChannelId(channelId);
 		List<UsermadePlaylistInfo> userPlaylistList = new ArrayList<>();
-		Iterator<User> itr = userList.iterator();
+		Iterator<UsermadePlaylist> itr = userList.iterator();
 		Set<String> namesUniqueSet = new HashSet<>();
 		List<String> userNameList = new ArrayList<String>();
 				
 		while(itr.hasNext()){
-			User u = itr.next();
+			UsermadePlaylist u = itr.next();
 			userNameList.add(u.getPlaylistName());			
 			if(!namesUniqueSet.contains(u.getPlaylistName())){
 				namesUniqueSet.add(u.getPlaylistName());
@@ -86,54 +74,43 @@ public class UsermadePlaylistServiceImpl implements UsermadePlaylistService {
 	}
 
 	@Override
-	public void add(String channelId, String playlistName, String link) {
-		User user = new User(10L, channelId, playlistName, link, 0);
-		this.usermadePlaylistRepo.save(user);
-	}
-
-	@Override
-	public ArrayList<User> findAllByLink(List<String> userId) {		
-		return this.usermadePlaylistRepo.findAllByLink(userId);
-	}
-
-	@Override
-	public User findbyLink(String link){
-		return this.usermadePlaylistRepo.findByLink(link);
-	}
-
-	@Override
-	public void add(List<PlaylistLink> playlistLinkList, String playlistName) {
-		String channelId = MyUploads.getChannelId();
-		ListIterator<PlaylistLink> itr = playlistLinkList.listIterator();
-		List<User> userList = new ArrayList<User>();
-		while(itr.hasNext()){
-			PlaylistLink p = itr.next();
-			if(p.getLink() != null){
-				userList.add(new User(
-						10L,
-						channelId,
-						playlistName, 
-						p.getLink(),
-						0
-						));
-			}
-		}
+	public void add(ArrayList<String> itemsInfoList, String playlistName, String channelId){
+		List<PlaylistItemInfo> playlistItemInfoList = new ArrayList<>();
+		List<UsermadePlaylist> usermadePlaylists = new ArrayList<UsermadePlaylist>();
 		
-		ListIterator<User> userListItr = userList.listIterator();
- 		while(userListItr.hasNext()){
-			this.usermadePlaylistRepo.save(userListItr.next());
+		for (String itemInfo : itemsInfoList){
+				if(itemInfo != null){
+					String[] lines = itemInfo.split("\n");
+					playlistItemInfoList.add(new PlaylistItemInfo(lines[0], lines[1]));
+					usermadePlaylists.add(new UsermadePlaylist(
+							10L,
+							channelId,
+							playlistName, 
+							lines[1],
+							0,
+							lines[0]
+							));
+			}			
+		}	
+		
+ 		for (UsermadePlaylist usermadePlaylist : usermadePlaylists){
+			this.usermadePlaylistRepo.save(usermadePlaylist);
 		}
 	}
+	
+	@Override
+	public void delete(ArrayList<UsermadePlaylist> usermadePlaylists, String playlistName) {
+		for (UsermadePlaylist usermadePlaylist : usermadePlaylists){
+			if(usermadePlaylist.getId() != null){
+				this.usermadePlaylistRepo.deleteById(usermadePlaylist.getId());
+			}
+		}
+	}
 
 	@Override
-	public void delete(ArrayList<User> userList, String playlistName) {
-		Iterator<User> itr = userList.iterator();
-		
-		while(itr.hasNext()){
-			User u = itr.next();
-			if(u.getId() != null){
-				this.usermadePlaylistRepo.deleteById(u.getId());
-			}
+	public void addAll(ArrayList<UsermadePlaylist> usermadePlaylists) {
+		for (UsermadePlaylist usermadePlaylist : usermadePlaylists){
+			this.saveUsermadePlaylist(usermadePlaylist);
 		}
 	}
 	

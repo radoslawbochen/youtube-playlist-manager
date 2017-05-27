@@ -69,13 +69,13 @@ html,body {
 
 <div class="usermadePlaylist">
 	<div th:if="!${#lists.isEmpty(usermadePlaylistList)}" >
-		<form action="#" method="post" th:action="@{/delete}" th:object="${users}">
+		<form action="#" method="post" th:action="@{viewPlaylist/delete}" th:object="${usermadePlaylist}">
 			<table bgcolor="#404040">
 			<tr th:each="userPlaylist, status : ${usermadePlaylistList}">
-				<td width="70%" th:text="${userPlaylist.getLink()}"></td>
+				<td width="70%" th:text="${userPlaylist.getVideoTitle()}"></td>
 				<td width="30%" th:text="${userPlaylist.getTimesRepeated()}"></td>
 				<td>
-				<input type="checkbox" th:field="*{users[__${status.index}__].id}" th:value="${userPlaylist.id}"/> 
+				<input type="checkbox" th:field="*{usermadePlaylists[__${status.index}__].id}" th:value="${userPlaylist.id}"/> 
 				</td>
 			</tr>
 			
@@ -88,7 +88,7 @@ html,body {
 
 <div class="youtubePlaylists">
 <div class="panel-group">
-	<form method="post" th:action="@{/add}" th:object="${addList}">
+	<form method="post" th:action="@{viewPlaylist/add}" th:object="${addList}">
 	<div th:if="!${#lists.isEmpty(youtubePlaylistList)}" >	
   	<div th:each="youtubePlaylist, status : ${youtubePlaylistList}" >
   		<div class="panel panel-default">
@@ -100,11 +100,11 @@ html,body {
       		</h4>
     		</div>
     		<div th:id="|collapse__${status.index + 1}__|" class="panel-collapse collapse">
-    		<div th:if="!${#lists.isEmpty(youtubePlaylist.getPlaylistItemsLinksList())}" >
-      		<ul class="list-group" th:each="item, itemStatus : ${youtubePlaylist.getPlaylistItemsLinksList()}" >
+    		<div th:if="!${#lists.isEmpty(youtubePlaylist.getPlaylistItemsInfoList())}" >
+      		<ul class="list-group" th:each="item, itemStatus : ${youtubePlaylist.getPlaylistItemsInfoList()}" >
         		<li class="list-group-item">
-        			<input type="checkbox" th:field="*{addList[__${itemStatus.index}__].link}" th:value="${item}" th:text="${youtubePlaylist.getPlaylistItemsTitlesList().get(__${itemStatus.index}__)}"/>
-        		</li>
+        		    <input type="checkbox" th:field="*{addList[__${itemStatus.index}__]}" th:value="${item.toString()}" th:text="${item.getTitle()}"/>
+    			</li>
         	</ul>
       		<div class="panel-footer"></div>
       		</div>
