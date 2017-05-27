@@ -47,6 +47,9 @@ public class YoutubePlaylistServiceImpl implements YoutubePlaylistService {
 
 	@Override
 	public List<YoutubePlaylist> findYoutubePlaylistsByChanellId(String channelId, List<UsermadePlaylist> usermadePlaylists) {		
+<<<<<<< HEAD
+>>>>>>> parent of 55a2df8... moved leftover logic from controllers to services
+=======
 >>>>>>> parent of 55a2df8... moved leftover logic from controllers to services
 		List<YoutubePlaylist> youtubePlaylists = YoutubeUserRepository.fetchPlaylistList(channelId);
 				

@@ -32,6 +32,7 @@ import org.springframework.stereotype.Repository;
 
 public class YoutubeUserRepository {
 <<<<<<< HEAD
+<<<<<<< HEAD
 	
     public static String getChannelId(String userId){
     	String channelId = null;
@@ -51,6 +52,12 @@ public class YoutubeUserRepository {
 
     public static String getChannelId(String userId) throws IOException{
     	String channelId = null;
+=======
+
+
+    public static String getChannelId(String userId) throws IOException{
+    	String channelId = null;
+>>>>>>> parent of 55a2df8... moved leftover logic from controllers to services
 		    	
     	Credential credential = Auth.getFlow().loadCredential(userId);  
 			try {
@@ -61,6 +68,9 @@ public class YoutubeUserRepository {
 			    		)
 			    		.setApplicationName(
 			            "youtube-cmdline-user-playlists").build();
+<<<<<<< HEAD
+>>>>>>> parent of 55a2df8... moved leftover logic from controllers to services
+=======
 >>>>>>> parent of 55a2df8... moved leftover logic from controllers to services
 				
 		    	YouTube.Channels.List channelIdRequest = youtube.channels().list("id");
@@ -78,7 +88,11 @@ public class YoutubeUserRepository {
     }
     
 <<<<<<< HEAD
+<<<<<<< HEAD
     public static List<YoutubePlaylistInfo> fetchPlaylistsInfoList(String channelId, String userId) {
+=======
+    public List<YoutubePlaylistInfo> fetchPlaylistsInfoList(String channelId, String userId) throws IOException{
+>>>>>>> parent of 55a2df8... moved leftover logic from controllers to services
 =======
     public List<YoutubePlaylistInfo> fetchPlaylistsInfoList(String channelId, String userId) throws IOException{
 >>>>>>> parent of 55a2df8... moved leftover logic from controllers to services

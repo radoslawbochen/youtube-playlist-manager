@@ -5,9 +5,12 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 <<<<<<< HEAD
+<<<<<<< HEAD
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+=======
+>>>>>>> parent of 55a2df8... moved leftover logic from controllers to services
 =======
 >>>>>>> parent of 55a2df8... moved leftover logic from controllers to services
 import org.springframework.stereotype.Controller;
@@ -57,6 +60,7 @@ public class ViewPlaylistController {
 					return "redirect:/login";
 				}
 <<<<<<< HEAD
+<<<<<<< HEAD
 				Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 				User user = userService.findUserByEmail(auth.getName());
 				String channelId = YoutubeUserRepository.getChannelId(Integer.toString(user.getId()));
@@ -64,6 +68,13 @@ public class ViewPlaylistController {
     			if (playlistName != null){
     				List<UsermadePlaylist> usermadePlaylistList = usermadePlaylistService.findByPlaylistName(playlistName);
     				List<YoutubePlaylist> youtubePlaylistList = youtubePlaylistService.findYoutubePlaylists(channelId, usermadePlaylistList);
+=======
+				String channelId = YoutubeUserRepository.getChannelId(userId);				
+				
+    			if (playlistName != null){
+    				List<UsermadePlaylist> usermadePlaylistList = usermadePlaylistService.findByChannelIdAndPlaylistName(channelId, playlistName);
+    				List<YoutubePlaylist> youtubePlaylistList = youtubePlaylistService.findYoutubePlaylistsByChanellId(channelId, usermadePlaylistList);
+>>>>>>> parent of 55a2df8... moved leftover logic from controllers to services
 =======
 				String channelId = YoutubeUserRepository.getChannelId(userId);				
 				
