@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.view.RedirectView;
 
 import playlist.services.UserService;
 
@@ -34,7 +35,11 @@ public class PlaylistController {
     	playlist.security.Auth.receiveCode(userService, code);
     	
     	return "redirect:/user";
-    }    
+    }
+
+	public static RedirectView redirectToOauthLogin() {
+		return new RedirectView("/login");
+	}    
 	
 }
     

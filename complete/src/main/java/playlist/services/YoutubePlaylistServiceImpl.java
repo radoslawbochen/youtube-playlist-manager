@@ -15,7 +15,6 @@ import playlist.entity.usermadePlaylist.UsermadePlaylist;
 import playlist.entity.youtubePlaylist.YoutubePlaylist;
 import playlist.entity.youtubePlaylist.YoutubePlaylistInfo;
 import playlist.repositories.YoutubeUserRepository;
-import playlist.security.Auth;
 
 @Service
 public class YoutubePlaylistServiceImpl implements YoutubePlaylistService {
@@ -32,8 +31,7 @@ public class YoutubePlaylistServiceImpl implements YoutubePlaylistService {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		User user = userService.findUserByEmail(auth.getName());
 		String userId = String.valueOf(user.getId());
-		String channelId = YoutubeUserRepository.getChannelId(userId);
-		System.out.println("DUPADUPADUPADUPADUPADUPADUPADUPADUPADUPADUPADUPA " + userId);
+		String channelId = YoutubeUserRepository.getChannelId(credential, userId);
 		return YoutubeUserRepository.fetchPlaylistsInfoList(credential, channelId, userId);
 	}
 

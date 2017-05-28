@@ -3,24 +3,26 @@ package playlist.services;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.api.client.auth.oauth2.Credential;
+
 import playlist.entity.usermadePlaylist.UsermadePlaylist;
 import playlist.entity.usermadePlaylist.UsermadePlaylistInfo;
 
 public interface UsermadePlaylistService {
 
-	List<UsermadePlaylist> findByChannelIdAndPlaylistName(String channelId, String playlistName);
+	List<UsermadePlaylist> findByPlaylistName(Credential credential, String playlistName);
 
 	void saveUsermadePlaylist(UsermadePlaylist usermadePlaylist);
 
-	List<UsermadePlaylistInfo> findDistinctPlaylistNameByChannelId(String channelId);
-
-	void deleteByChannelIdAndPlaylistName(String channelId, String playlistName);
+	List<UsermadePlaylistInfo> findDistinctPlaylistName(Credential credential);
 
 	void deleteById(Long i);
 	
-	void add(ArrayList<String> arrayList, String addPlaylistName, String channelId);
-
 	void delete(ArrayList<UsermadePlaylist> userList, String playlistName);
 
-	void addAll(ArrayList<UsermadePlaylist> usermadePlaylists);	
+	void addAll(ArrayList<UsermadePlaylist> usermadePlaylists);
+
+	void deleteByPlaylistNameAndChannelId(Credential credential, String playlistName);
+
+	void add(Credential credential, ArrayList<String> itemsInfoList, String playlistName);	
 }

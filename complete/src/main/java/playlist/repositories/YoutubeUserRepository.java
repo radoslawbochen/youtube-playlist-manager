@@ -31,13 +31,9 @@ import java.util.List;
 
 public class YoutubeUserRepository {
 	
-    public static String getChannelId(String userId){
+    public static String getChannelId(Credential credential, String userId){
     	String channelId = null;
-		try {		    	
-			
-			Credential credential = Auth.getFlow().loadCredential(userId); 
-			System.out.println(credential.toString());
-
+		try {		    				
 			YouTube youtube = new YouTube.Builder(
 			    	Auth.HTTP_TRANSPORT, 
 			   		Auth.JSON_FACTORY, 
@@ -89,7 +85,6 @@ public class YoutubeUserRepository {
         YouTube.Channels.List channelsList;
         
 		try {
-			//Credential credential = Auth.getFlow().loadCredential(userId);
 			YouTube youtube = new YouTube.Builder(
 		    		Auth.HTTP_TRANSPORT, 
 		    		Auth.JSON_FACTORY, 
@@ -152,7 +147,6 @@ public class YoutubeUserRepository {
 		
 		List<PlaylistItemInfo> playlistItemsInfoList = new ArrayList<>();
 		try {			
-			//Credential credential = Auth.getFlow().loadCredential(userId);
 			YouTube youtube = new YouTube.Builder(
 		    		Auth.HTTP_TRANSPORT, 
 		    		Auth.JSON_FACTORY, 

@@ -36,6 +36,7 @@ public class ViewPlaylistController {
     public void initBinder(WebDataBinder binder) {
         binder.setAutoGrowCollectionLimit(2048);
     }
+    
     @Autowired
     private UserService userService;
 	@Autowired
@@ -56,10 +57,10 @@ public class ViewPlaylistController {
 				
 				Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 				User user = userService.findUserByEmail(auth.getName());
-				String channelId = YoutubeUserRepository.getChannelId(Integer.toString(user.getId()));
+				String channelId = YoutubeUserRepository.getChannelId(credential, Integer.toString(user.getId()));
 				
     			if (playlistName != null){
-    				List<UsermadePlaylist> usermadePlaylistList = usermadePlaylistService.findByPlaylistName(playlistName);
+    				List<UsermadePlaylist> usermadePlaylistList = usermadePlaylistService.findByPlaylistName(credential, playlistName);
     				List<YoutubePlaylist> youtubePlaylistList = youtubePlaylistService.findYoutubePlaylists(credential, channelId, usermadePlaylistList);
     				
     				model.addAttribute("playlistName", playlistName);
@@ -71,7 +72,7 @@ public class ViewPlaylistController {
     				return "playlistViewA";
     			} else {
     				model.addAttribute("youtubePlaylistInfoList", youtubePlaylistService.findYoutubePlaylistsInfo(credential));
-					model.addAttribute("usermadePlaylistInfoList", usermadePlaylistService.findDistinctPlaylistName());
+					model.addAttribute("usermadePlaylistInfoList", usermadePlaylistService.findDistinctPlaylistName(credential));
 					
 					return "playlistView";
     			}
@@ -83,14 +84,16 @@ public class ViewPlaylistController {
 			@RequestParam(required = false, value = "delete") String deletePlaylistName
 	) throws IOException{		
 		String userId = Auth.getUserId(userService);
-		String channelId = YoutubeUserRepository.getChannelId(userId);		
+		Credential credential = Auth.getFlow().loadCredential(Auth.getUserId(userService)); 
+
+		String channelId = YoutubeUserRepository.getChannelId(credential, userId);		
 		if (addPlaylistName != null){
 			usermadePlaylistService.saveUsermadePlaylist(new UsermadePlaylist(10L, channelId, addPlaylistName));
 		    String getPlaylist = "?playlist=" + addPlaylistName;
 		    
 			return "redirect:/viewPlaylist" + getPlaylist;
 		} else if (deletePlaylistName != null) {
-			usermadePlaylistService.deleteByPlaylistName(deletePlaylistName);
+			usermadePlaylistService.deleteByPlaylistNameAndChannelId(credential, deletePlaylistName);
 			
 			return "redirect:/viewPlaylist";
 		}
@@ -113,8 +116,8 @@ public class ViewPlaylistController {
     		@ModelAttribute(value = "addList") AddListWrapper addListWrapper,
     		@RequestParam(value = "playlistName", required = false) String playlistName
     		) throws IOException{		  
-    	
-			usermadePlaylistService.add(addListWrapper.getAddList(), playlistName);
+			Credential credential = Auth.getFlow().loadCredential(Auth.getUserId(userService)); 
+			usermadePlaylistService.add(credential, addListWrapper.getAddList(), playlistName);
 		
     	return "redirect:/viewPlaylist?playlist=" + playlistName;
     }    
