@@ -10,6 +10,7 @@ import com.google.api.services.youtube.model.PlaylistItemListResponse;
 import com.google.api.services.youtube.model.PlaylistListResponse;
 import com.google.api.services.youtube.model.PlaylistSnippet;
 
+import playlist.controller.PlaylistController;
 import playlist.entity.PlaylistItemInfo;
 import playlist.entity.youtubePlaylist.YoutubePlaylist;
 import playlist.entity.youtubePlaylist.YoutubePlaylistInfo;
@@ -21,8 +22,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import org.springframework.stereotype.Repository;
-
 /**
  * Print a list of videos uploaded to the authenticated user's YouTube channel.
  *
@@ -31,12 +30,11 @@ import org.springframework.stereotype.Repository;
 
 
 public class YoutubeUserRepository {
-<<<<<<< HEAD
-<<<<<<< HEAD
 	
     public static String getChannelId(String userId){
     	String channelId = null;
 		try {		    	
+			
 			Credential credential = Auth.getFlow().loadCredential(userId); 
 			System.out.println(credential.toString());
 
@@ -47,58 +45,28 @@ public class YoutubeUserRepository {
 			   		)
 			   		.setApplicationName(
 		            "youtube-cmdline-user-playlists").build();
-=======
-
-
-    public static String getChannelId(String userId) throws IOException{
-    	String channelId = null;
-=======
-
-
-    public static String getChannelId(String userId) throws IOException{
-    	String channelId = null;
->>>>>>> parent of 55a2df8... moved leftover logic from controllers to services
-		    	
-    	Credential credential = Auth.getFlow().loadCredential(userId);  
-			try {
-				YouTube youtube = new YouTube.Builder(
-			    		Auth.HTTP_TRANSPORT, 
-			    		Auth.JSON_FACTORY, 
-			    		credential
-			    		)
-			    		.setApplicationName(
-			            "youtube-cmdline-user-playlists").build();
-<<<<<<< HEAD
->>>>>>> parent of 55a2df8... moved leftover logic from controllers to services
-=======
->>>>>>> parent of 55a2df8... moved leftover logic from controllers to services
 				
-		    	YouTube.Channels.List channelIdRequest = youtube.channels().list("id");
-				channelIdRequest = youtube.channels().list("id");
-				channelIdRequest.setMine(true);
-		        channelIdRequest.getId();
-		        ChannelListResponse channelIdResult = channelIdRequest.execute();
-		        channelId = channelIdResult.getItems().get(0).getId();
-		        channelId = channelId.replace("-", "");
+		    YouTube.Channels.List channelIdRequest = youtube.channels().list("id");
+			channelIdRequest = youtube.channels().list("id");
+			channelIdRequest.setMine(true);
+	        channelIdRequest.getId();
+	        ChannelListResponse channelIdResult = channelIdRequest.execute();
+	        channelId = channelIdResult.getItems().get(0).getId();
+	        channelId = channelId.replace("-", "");
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+		if (channelId.isEmpty()){
+			PlaylistController.redirectToOauthLogin();
+		}
 			
 		return channelId;
     }
     
-<<<<<<< HEAD
-<<<<<<< HEAD
-    public static List<YoutubePlaylistInfo> fetchPlaylistsInfoList(String channelId, String userId) {
-=======
-    public List<YoutubePlaylistInfo> fetchPlaylistsInfoList(String channelId, String userId) throws IOException{
->>>>>>> parent of 55a2df8... moved leftover logic from controllers to services
-=======
-    public List<YoutubePlaylistInfo> fetchPlaylistsInfoList(String channelId, String userId) throws IOException{
->>>>>>> parent of 55a2df8... moved leftover logic from controllers to services
+    public static List<YoutubePlaylistInfo> fetchPlaylistsInfoList(Credential credential, String channelId, String userId) {
         List<YoutubePlaylistInfo> youtubePlaylistInfoList = new ArrayList<YoutubePlaylistInfo>();
        		
-	    List<YoutubePlaylist> playlists = fetchPlaylistList(userId);
+	    List<YoutubePlaylist> playlists = fetchPlaylistList(credential, userId);
 	        
 	    if (playlists != null) {
 	       for(YoutubePlaylist playlist : playlists) {                         
@@ -114,14 +82,14 @@ public class YoutubeUserRepository {
     	return youtubePlaylistInfoList;    	
     }
 
-	public static List<YoutubePlaylist> fetchPlaylistList(String userId) {
+	public static List<YoutubePlaylist> fetchPlaylistList(Credential credential, String userId) {
         List<YoutubePlaylist> youtubePlaylistList = new ArrayList<YoutubePlaylist>();
         
         YouTube.Playlists.List searchList;
         YouTube.Channels.List channelsList;
         
 		try {
-			Credential credential = Auth.getFlow().loadCredential(userId);
+			//Credential credential = Auth.getFlow().loadCredential(userId);
 			YouTube youtube = new YouTube.Builder(
 		    		Auth.HTTP_TRANSPORT, 
 		    		Auth.JSON_FACTORY, 
@@ -168,7 +136,7 @@ public class YoutubeUserRepository {
 	        		youtubePlaylistList.add(new YoutubePlaylist(
 	        				playlist.getSnippet().getTitle(),
                             playlistId,
-                            getPlaylistItemsInfo(userId, playlistId)
+                            getPlaylistItemsInfo(credential, userId, playlistId)
 	                        ));
 	        		}	                           
 	        }
@@ -180,11 +148,11 @@ public class YoutubeUserRepository {
 	}	
 		
 	
-	static List<PlaylistItemInfo> getPlaylistItemsInfo(String userId, String playlistId){
+	static List<PlaylistItemInfo> getPlaylistItemsInfo(Credential credential, String userId, String playlistId){
 		
 		List<PlaylistItemInfo> playlistItemsInfoList = new ArrayList<>();
 		try {			
-			Credential credential = Auth.getFlow().loadCredential(userId);
+			//Credential credential = Auth.getFlow().loadCredential(userId);
 			YouTube youtube = new YouTube.Builder(
 		    		Auth.HTTP_TRANSPORT, 
 		    		Auth.JSON_FACTORY, 

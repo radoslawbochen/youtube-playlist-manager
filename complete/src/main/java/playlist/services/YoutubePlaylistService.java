@@ -3,23 +3,17 @@ package playlist.services;
 import java.io.IOException;
 import java.util.List;
 
+import com.google.api.client.auth.oauth2.Credential;
+
 import playlist.entity.usermadePlaylist.UsermadePlaylist;
 import playlist.entity.youtubePlaylist.YoutubePlaylist;
 import playlist.entity.youtubePlaylist.YoutubePlaylistInfo;
 
 public interface YoutubePlaylistService {
 
-	List<YoutubePlaylistInfo> findYoutubePlaylistsInfo(String channelId) throws IOException;
+	List<YoutubePlaylistInfo> findYoutubePlaylistsInfo(Credential credential);
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-	List<YoutubePlaylist> findYoutubePlaylists(String channelId, List<UsermadePlaylist> usermadePlaylistList) throws IOException;
-=======
-	List<YoutubePlaylist> findYoutubePlaylistsByChanellId(String channelId, List<UsermadePlaylist> usermadePlaylistList) throws IOException;
->>>>>>> parent of 55a2df8... moved leftover logic from controllers to services
-=======
-	List<YoutubePlaylist> findYoutubePlaylistsByChanellId(String channelId, List<UsermadePlaylist> usermadePlaylistList) throws IOException;
->>>>>>> parent of 55a2df8... moved leftover logic from controllers to services
+	List<YoutubePlaylist> findYoutubePlaylists(Credential credential, String channelId, List<UsermadePlaylist> usermadePlaylistList) throws IOException;
 
 	UsermadePlaylist findbyLink(String link);
 
