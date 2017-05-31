@@ -79,8 +79,8 @@ public class ViewPlaylistController {
 	}
 	
 	@RequestMapping(method = RequestMethod.POST)
-	public String addPlaylist(
-			@RequestParam(required = false, value = "name") String addPlaylistName,
+	public String modifyUsermadePlaylist(
+			@RequestParam(required = false, value = "add") String addPlaylistName,
 			@RequestParam(required = false, value = "delete") String deletePlaylistName
 	) throws IOException{		
 		String userId = Auth.getUserId(userService);

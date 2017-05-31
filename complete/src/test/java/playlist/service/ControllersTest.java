@@ -9,10 +9,14 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import javax.servlet.http.HttpSession;
 
@@ -22,6 +26,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockHttpSession;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -37,7 +46,9 @@ import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 
 import playlist.entity.usermadePlaylist.UsermadePlaylist;
+import playlist.entity.usermadePlaylist.UsermadePlaylistWrapper;
 import playlist.entity.youtubePlaylist.YoutubePlaylistInfo;
+import playlist.services.UserService;
 import playlist.services.UsermadePlaylistService;
 import playlist.services.YoutubePlaylistService;
 
@@ -52,97 +63,38 @@ public class ControllersTest {
 	private MockMvc mockMvc;
 	
 	@Autowired
+    private UserService userServiceMock;
+	@Autowired
 	private UsermadePlaylistService usermadePlaylistServiceMock;
 	@Autowired
 	private YoutubePlaylistService youtubePlaylistServiceMock;
 	
 	@Test
+	@WithMockUser(username = "username", roles={"default"})
 	public void testPlaylistView() throws Exception {
-		MockHttpSession session = new MockHttpSession();
 		String channelId = "TestChannelIdYoutubeAPI";
-		String playlistName = "Test PlaylistName";
-				
-		YoutubePlaylistInfo youtubePlaylistInfo1 = new YoutubePlaylistInfo(
-				"playlistName",
-				11,
-				"playlistId"
-				);
+		String playlistName = "Test PlaylistName";				
 		
-		YoutubePlaylistInfo youtubePlaylistInfo2 = new YoutubePlaylistInfo(
-				"playlistName",
-				12,
-				"playlistId"
-				);
+		UsermadePlaylist playlist1 = new UsermadePlaylist(10L);		
+		UsermadePlaylist playlist2 = new UsermadePlaylist(11L);
+		UsermadePlaylist playlist3 = new UsermadePlaylist(10L, channelId, playlistName);
+		UsermadePlaylistWrapper usermadePlaylistWrapper = new UsermadePlaylistWrapper();
+		ArrayList<UsermadePlaylist> usermadePlaylists = new ArrayList<>(); 
+		usermadePlaylists.addAll(Arrays.asList(playlist1, playlist2));
+		usermadePlaylistWrapper.setUsermadePlaylists(usermadePlaylists);
 		
-		UsermadePlaylist playlist1 = new UsermadePlaylist(
-				10L, 
-				channelId, 
-				playlistName, 
-				"link1", 
-				2,
-				"videoTitle1"
-				);
-		
-		UsermadePlaylist playlist2 = new UsermadePlaylist(
-				10L, 
-				channelId, 
-				playlistName, 
-				"link2", 
-				2,
-				"videoTitle2"
-				);
-		
-		when(youtubePlaylistServiceMock.findYoutubePlaylistsInfo(session, playlistName)).thenReturn(Arrays.asList(youtubePlaylistInfo1, youtubePlaylistInfo2));
-		when(usermadePlaylistServiceMock.findByChannelIdAndPlaylistName(channelId, playlistName)).thenReturn(Arrays.asList(playlist1, playlist2));	
-	
+		//when(usermadePlaylistServiceMock.delete(usermadePlaylists, playlistName)).
+		when(usermadePlaylistServiceMock.saveUsermadePlaylist(playlist3)).thenReturn(playlist3);
+				 
 		mockMvc.perform(
-				get("/viewPlaylist")
-					.sessionAttr("channelId", "TestChannelIdYoutubeAPI")
+				post("/viewPlaylist")		
+					.param("add", playlistName)			
 				)
 				.andExpect(status().isOk())
-				.andExpect(model().attribute("youtubePlaylistInfoList", hasItem(
-						allOf(
-								hasProperty("name", is("playlistName")),
-								hasProperty("videosAmount", is(11)),
-								hasProperty("playlistId", is("playlistId"))
-						)
-						
-						)))
-				.andExpect(model().attribute("youtubePlaylistInfoList", hasItem(
-						allOf(
-								hasProperty("name", is("playlistName")),
-								hasProperty("videosAmount", is(12)),
-								hasProperty("playlistId", is("playlistId"))
-						)						
-						
-						)))
-				.andExpect(model().attribute("usermadePlaylistInfoList", hasItem(
-						allOf(
-								hasProperty("id", is(10L)),
-								hasProperty("channelId", is("channelId")),
-								hasProperty("playlistName", is("playlistName")),
-								hasProperty("link", is("link1")),
-								hasProperty("timesRepeated", is(2)),
-								hasProperty("videoTitle", is("videoTitle1"))
-						)	
-						)))
-				.andExpect(model().attribute("usermadePlaylistInfoList", hasItem(
-						allOf(
-								hasProperty("id", is(10L)),
-								hasProperty("channelId", is("channelId")),
-								hasProperty("playlistName", is("playlistName")),
-								hasProperty("link", is("link2")),
-								hasProperty("timesRepeated", is(2)),
-								hasProperty("videoTitle", is("videoTitle2"))
-						)	
-						)))
-				;		
+				.andExpect(redirectedUrl("/viewPlaylist?playlist=" + playlistName));	
 		
-		verify(youtubePlaylistServiceMock, times(1)).findYoutubePlaylistsInfo(session, playlistName);
-		verify(usermadePlaylistServiceMock, times(1)).findByChannelIdAndPlaylistName(channelId, playlistName);
-		verifyNoMoreInteractions(youtubePlaylistServiceMock);
+		verify(usermadePlaylistServiceMock, times(1)).saveUsermadePlaylist(new UsermadePlaylist(10L, channelId, playlistName));
 		verifyNoMoreInteractions(usermadePlaylistServiceMock);
-
 	}
 	
 }

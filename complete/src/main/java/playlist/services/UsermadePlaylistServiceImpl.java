@@ -43,8 +43,8 @@ public class UsermadePlaylistServiceImpl implements UsermadePlaylistService {
 	}
 	
 	@Override
-	public void saveUsermadePlaylist(UsermadePlaylist usermadePlaylist){
-		this.usermadePlaylistRepo.save(usermadePlaylist);
+	public UsermadePlaylist saveUsermadePlaylist(UsermadePlaylist usermadePlaylist){
+		return this.usermadePlaylistRepo.save(usermadePlaylist);
 	}
 
 	@Override

@@ -12,7 +12,7 @@ public interface UsermadePlaylistService {
 
 	List<UsermadePlaylist> findByPlaylistName(Credential credential, String playlistName);
 
-	void saveUsermadePlaylist(UsermadePlaylist usermadePlaylist);
+	UsermadePlaylist saveUsermadePlaylist(UsermadePlaylist usermadePlaylist);
 
 	List<UsermadePlaylistInfo> findDistinctPlaylistName(Credential credential);
 
