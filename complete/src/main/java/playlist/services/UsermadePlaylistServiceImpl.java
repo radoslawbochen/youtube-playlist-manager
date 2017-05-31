@@ -95,7 +95,6 @@ public class UsermadePlaylistServiceImpl implements UsermadePlaylistService {
 				if(itemInfo != null){
 					String link = itemInfo.substring(itemInfo.length() - 11);
 					String videoTitle = itemInfo.substring(0, itemInfo.length() - 11);
-					System.out.println(link + " " + videoTitle);
 					playlistItemInfoList.add(new PlaylistItemInfo(videoTitle, link));
 					usermadePlaylists.add(new UsermadePlaylist(
 							10L,
