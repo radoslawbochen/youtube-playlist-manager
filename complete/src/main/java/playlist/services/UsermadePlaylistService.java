@@ -25,4 +25,6 @@ public interface UsermadePlaylistService {
 	void deleteByPlaylistNameAndChannelId(Credential credential, String playlistName);
 
 	void add(Credential credential, ArrayList<String> itemsInfoList, String playlistName);	
+	
+	List<UsermadePlaylist> compare(List<String> filesNamesToCompare, List<UsermadePlaylist> usermadePlaylist);
 }

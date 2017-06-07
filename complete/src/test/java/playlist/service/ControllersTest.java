@@ -85,7 +85,7 @@ public class ControllersTest {
 		
 		//when(usermadePlaylistServiceMock.delete(usermadePlaylists, playlistName)).
 		when(usermadePlaylistServiceMock.saveUsermadePlaylist(playlist3)).thenReturn(playlist3);
-				 
+		
 		mockMvc.perform(
 				post("/viewPlaylist")		
 					.param("add", playlistName)			

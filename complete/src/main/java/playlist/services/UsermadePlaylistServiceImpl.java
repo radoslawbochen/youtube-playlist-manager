@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -126,6 +127,30 @@ public class UsermadePlaylistServiceImpl implements UsermadePlaylistService {
 		for (UsermadePlaylist usermadePlaylist : usermadePlaylists){
 			this.saveUsermadePlaylist(usermadePlaylist);
 		}
+	}
+
+	@Override
+	public List<UsermadePlaylist> compare(List<String> filesNamesToCompare, List<UsermadePlaylist> usermadePlaylist) {
+		List<UsermadePlaylist> comparedPlaylist = new ArrayList<>();
+
+		ListIterator<UsermadePlaylist> usermadePlaylistIterator = usermadePlaylist.listIterator();
+		
+		for(String name : filesNamesToCompare){
+			usermadePlaylistIterator = usermadePlaylist.listIterator();
+			while(usermadePlaylistIterator.hasNext()){
+				UsermadePlaylist tempUsermadePlaylist = usermadePlaylistIterator.next();
+				if(name == tempUsermadePlaylist.getVideoTitle()){
+					usermadePlaylistIterator.remove();
+				}
+			}
+		}		
+
+		Iterator<UsermadePlaylist> usermadePlaylistItr = usermadePlaylist.listIterator();
+		while(usermadePlaylistItr.hasNext()){
+			comparedPlaylist.add(usermadePlaylistItr.next());
+		}
+		
+		return comparedPlaylist;
 	}
 
 

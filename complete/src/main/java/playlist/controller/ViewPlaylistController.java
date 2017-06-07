@@ -1,6 +1,7 @@
 package playlist.controller;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,8 +46,7 @@ public class ViewPlaylistController {
 	private YoutubePlaylistService youtubePlaylistService;
 	
 	@RequestMapping(method = RequestMethod.GET)
-    public String playlistView(
-    		
+    public String playlistView(    		
     		@RequestParam(value = "playlist", required = false) String playlistName,
 			Model model
 			) throws IOException{		
@@ -68,6 +68,7 @@ public class ViewPlaylistController {
     				model.addAttribute("addList" , new AddListWrapper());
     				model.addAttribute("youtubePlaylistList", youtubePlaylistList);
     				model.addAttribute("usermadePlaylistList", usermadePlaylistList);
+    				model.addAttribute("filesToCompare", new ArrayList<String>());
     				
     				return "playlistViewA";
     			} else {
@@ -121,4 +122,16 @@ public class ViewPlaylistController {
 		
     	return "redirect:/viewPlaylist?playlist=" + playlistName;
     }    
+
+    @RequestMapping(value = "/compare")
+    String compareUserFilesToPlaylist(
+    		@ModelAttribute(value = "usermadePlaylistList") List<UsermadePlaylist> usermadePlaylist,
+    		@ModelAttribute(value = "filesToCompare") List<String> userLocalFilesNames,
+    		Model model
+    		){    	
+    	List<UsermadePlaylist> comparedPlaylist = usermadePlaylistService.compare(userLocalFilesNames, usermadePlaylist);    	
+    	model.addAttribute(comparedPlaylist);
+    	    	
+    	return "";
+    }
 }
