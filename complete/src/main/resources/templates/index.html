@@ -5,22 +5,5 @@
 </head>
 <body>
 <a href="/user/login">Login</a>
-<div>
-<input type="file" id="files" name="files[]" multiple />
-<output id="list"></output>
-
-<script>
-	function handleFileSelect(evt) {
-		var files = evt.target.files;
-		var output = [];
-		for (var i = 0, f; f = files[i]; i++){
-			output.push(escape(f.name));
-	}
-		document.getElementById('list').innerHTML = '<ul>' + output.join('') + '</ul>';
-	}
-	
-	document.getElementById('files').addEventListener('change', handleFileSelect, false);
-</script>
-</div>
 </body>
 </html>

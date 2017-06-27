@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<table>
+	<tr th:each="playlistItem : ${playlist}">
+		<td width="35%"><a th:text="${playlistItem.getVideoTitle()}"></a></td>
+		<td><a th:text="${playlistItem.getLink()}"></a></td>
+	</tr>
+</table>
+
+</body>
+</html>

@@ -2,7 +2,10 @@ package playlist.controller;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -15,6 +18,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.google.api.client.auth.oauth2.Credential;
 
@@ -48,6 +53,7 @@ public class ViewPlaylistController {
 	@RequestMapping(method = RequestMethod.GET)
     public String playlistView(    		
     		@RequestParam(value = "playlist", required = false) String playlistName,
+    		RedirectAttributes redirectAttributes,
 			Model model
 			) throws IOException{		
 				if(Auth.getFlow() == null){
@@ -60,11 +66,13 @@ public class ViewPlaylistController {
 				String channelId = YoutubeUserRepository.getChannelId(credential, Integer.toString(user.getId()));
 				
     			if (playlistName != null){
-    				List<UsermadePlaylist> usermadePlaylistList = usermadePlaylistService.findByPlaylistName(credential, playlistName);
-    				List<YoutubePlaylist> youtubePlaylistList = youtubePlaylistService.findYoutubePlaylists(credential, channelId, usermadePlaylistList);
-    				
-    				model.addAttribute("playlistName", playlistName);
+    				List<UsermadePlaylist> usermadePlaylistListt = usermadePlaylistService.findByPlaylistName(credential, playlistName);
+    				List<YoutubePlaylist> youtubePlaylistList = youtubePlaylistService.findYoutubePlaylists(credential, channelId, usermadePlaylistListt);
+    				ArrayList<UsermadePlaylist> usermadePlaylistList = new ArrayList<UsermadePlaylist>(usermadePlaylistListt);
+ 				    				
     				model.addAttribute("usermadePlaylist", new UsermadePlaylistWrapper());
+    				model.addAttribute("playlistName", playlistName);
+    				//model.addAttribute("userPlaylist", new UsermadePlaylistWrapper());
     				model.addAttribute("addList" , new AddListWrapper());
     				model.addAttribute("youtubePlaylistList", youtubePlaylistList);
     				model.addAttribute("usermadePlaylistList", usermadePlaylistList);
@@ -123,15 +131,29 @@ public class ViewPlaylistController {
     	return "redirect:/viewPlaylist?playlist=" + playlistName;
     }    
 
-    @RequestMapping(value = "/compare")
-    String compareUserFilesToPlaylist(
-    		@ModelAttribute(value = "usermadePlaylistList") List<UsermadePlaylist> usermadePlaylist,
-    		@ModelAttribute(value = "filesToCompare") List<String> userLocalFilesNames,
+    @RequestMapping(value = "/compare", method = RequestMethod.POST)
+    @ResponseBody List<UsermadePlaylist> compareUserFilesToPlaylist(
+    		@RequestParam("playlistName") String playlistName,
+    		@RequestParam("files[]") String[] files,
+    		HttpServletResponse response
+    		) throws IOException{
+    	Credential credential = Auth.getFlow().loadCredential(Auth.getUserId(userService));  	
+    	List<String> userFilesNamesToCompare = Arrays.asList(files);
+    	List<UsermadePlaylist> usermadePlaylist = usermadePlaylistService.findByPlaylistName(credential, playlistName);
+    	List<UsermadePlaylist> comparedPlaylist = usermadePlaylistService.compare(userFilesNamesToCompare, usermadePlaylist);
+    	
+    	return comparedPlaylist;
+    }
+    
+    @RequestMapping(value = "/links", method = RequestMethod.GET)
+    String showPlaylistLinks(
+    		@RequestParam("playlistName") String playlistName,
     		Model model
-    		){    	
-    	List<UsermadePlaylist> comparedPlaylist = usermadePlaylistService.compare(userLocalFilesNames, usermadePlaylist);    	
-    	model.addAttribute(comparedPlaylist);
-    	    	
-    	return "";
+    		) throws IOException{
+		Credential credential = Auth.getFlow().loadCredential(Auth.getUserId(userService)); 
+    	
+    	model.addAttribute("playlist", usermadePlaylistService.findByPlaylistName(credential, playlistName));
+    	
+    	return "links";
     }
 }

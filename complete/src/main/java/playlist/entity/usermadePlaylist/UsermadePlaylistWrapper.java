@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class UsermadePlaylistWrapper{
 
-	private ArrayList<UsermadePlaylist> usermadePlaylists;
+	public ArrayList<UsermadePlaylist> usermadePlaylists;
 
 	public ArrayList<UsermadePlaylist> getUsermadePlaylists() {
 		return usermadePlaylists;

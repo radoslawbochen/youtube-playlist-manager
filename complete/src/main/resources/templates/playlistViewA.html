@@ -1,6 +1,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="viewport" http-equiv="Content-type" content="application/x-www-form-urlencoded; charset=UTF-8"/>
+
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
@@ -114,8 +115,59 @@ html,body {
 	<input type="hidden" th:value="${playlistName}" name="playlistName" />
 	<input type="submit" value="Add"/>
 	</div>
-</form>
+	</form>
 </div>
+</div>
+
+<div>
+
+<form method="get" action="#" th:action="@{viewPlaylist/links}">
+    <input type="hidden" th:value="${playlistName}" th:name="playlistName"/>    
+    <input type="submit" value="Links" />
+</form>
+
+<input type="file" id="files" name="files[]" multiple="multiple" />
+
+
+<input id="clickMe" type="button" value="clickme" onclick="post('/viewPlaylist/compare');" />
+
+<script th:inline="javascript">
+/*<![CDATA[*/
+var output = [];
+
+	function handleFileSelect(evt) {
+		var files = evt.target.files;
+		for (var i = 0, f; f = files[i]; i++){
+			output.push(escape(f.name));
+		}
+	}
+	
+	document.getElementById('files').addEventListener('change', handleFileSelect, false);
+	
+	function post(path) {
+		var playlist = [[${playlistName}]];
+		console.log(playlist);
+		$.ajax({
+		    url: path,
+		    type : "POST",
+		    data : {
+		    	files : output,
+		    	playlistName : playlist
+		    },
+			success:function(response){
+				var responseJson = jQuery.parseJSON(JSON.stringify(response));
+
+				var $ul = $("<ul>").appendTo($("#result"));
+		        $.each(responseJson, function(index, item) {
+		            $("<li>").text(item.videoTitle).appendTo($ul);
+		        });
+			}
+		});
+	}
+	
+/*]]>*/
+</script>
+<ul id="result"></ul>
 </div>
 
 </body>

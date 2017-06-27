@@ -151,8 +151,5 @@ public class UsermadePlaylistServiceImpl implements UsermadePlaylistService {
 		}
 		
 		return comparedPlaylist;
-	}
-
-
-	
+	}	
 }

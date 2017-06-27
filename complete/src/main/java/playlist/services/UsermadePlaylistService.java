@@ -26,5 +26,5 @@ public interface UsermadePlaylistService {
 
 	void add(Credential credential, ArrayList<String> itemsInfoList, String playlistName);	
 	
-	List<UsermadePlaylist> compare(List<String> filesNamesToCompare, List<UsermadePlaylist> usermadePlaylist);
+	List<UsermadePlaylist> compare(List<String> userLocalFilesNames, List<UsermadePlaylist> usermadePlaylist);
 }

@@ -52,7 +52,7 @@ public class YoutubeUserRepository {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-		if (channelId.isEmpty()){
+		if (channelId == null){
 			PlaylistController.redirectToOauthLogin();
 		}
 			
