@@ -1,5 +1,6 @@
 package playlist.services;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -29,7 +30,8 @@ public class UsermadePlaylistServiceImpl implements UsermadePlaylistService {
 	private UserService userService;
 		
 	@Override
-	public List<UsermadePlaylist> findByPlaylistName(Credential credential, String playlistName) {
+	public List<UsermadePlaylist> findByPlaylistName(String playlistName) throws IOException {
+		Credential credential = Auth.getFlow().loadCredential(Auth.getUserId(userService)); 
 		String channelId = YoutubeUserRepository.getChannelId(credential, Auth.getUserId(userService));
 
 		List<UsermadePlaylist> usermadePlaylistList = new ArrayList<UsermadePlaylist>();
@@ -49,7 +51,8 @@ public class UsermadePlaylistServiceImpl implements UsermadePlaylistService {
 	}
 
 	@Override
-	public List<UsermadePlaylistInfo> findDistinctPlaylistName(Credential credential) {
+	public List<UsermadePlaylistInfo> findDistinctPlaylistName() throws IOException {
+		Credential credential = Auth.getFlow().loadCredential(Auth.getUserId(userService));
 		String channelId = YoutubeUserRepository.getChannelId(credential, Auth.getUserId(userService));
 
 		List<UsermadePlaylist> userList = usermadePlaylistRepo.findDistinctPlaylistNameByChannelId(channelId);
@@ -74,7 +77,8 @@ public class UsermadePlaylistServiceImpl implements UsermadePlaylistService {
 	}
 
 	@Override
-	public void deleteByPlaylistNameAndChannelId(Credential credential, String playlistName) {
+	public void deleteByPlaylistNameAndChannelId(String playlistName) throws IOException {
+		Credential credential = Auth.getFlow().loadCredential(Auth.getUserId(userService));
 		String channelId = YoutubeUserRepository.getChannelId(credential, Auth.getUserId(userService));
 
 		this.usermadePlaylistRepo.deleteByChannelIdAndPlaylistName(channelId, playlistName);

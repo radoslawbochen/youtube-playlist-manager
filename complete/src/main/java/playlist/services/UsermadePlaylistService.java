@@ -1,5 +1,6 @@
 package playlist.services;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,11 +11,11 @@ import playlist.entity.usermadePlaylist.UsermadePlaylistInfo;
 
 public interface UsermadePlaylistService {
 
-	List<UsermadePlaylist> findByPlaylistName(Credential credential, String playlistName);
+	List<UsermadePlaylist> findByPlaylistName(String playlistName) throws IOException;
 
 	UsermadePlaylist saveUsermadePlaylist(UsermadePlaylist usermadePlaylist);
 
-	List<UsermadePlaylistInfo> findDistinctPlaylistName(Credential credential);
+	List<UsermadePlaylistInfo> findDistinctPlaylistName() throws IOException;
 
 	void deleteById(Long i);
 	
@@ -22,7 +23,7 @@ public interface UsermadePlaylistService {
 
 	void addAll(ArrayList<UsermadePlaylist> usermadePlaylists);
 
-	void deleteByPlaylistNameAndChannelId(Credential credential, String playlistName);
+	void deleteByPlaylistNameAndChannelId(String playlistName) throws IOException;
 
 	void add(Credential credential, ArrayList<String> itemsInfoList, String playlistName);	
 	
