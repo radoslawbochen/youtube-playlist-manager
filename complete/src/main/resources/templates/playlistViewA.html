@@ -1,11 +1,11 @@
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head>
 <meta name="viewport" http-equiv="Content-type" content="application/x-www-form-urlencoded; charset=UTF-8"/>
-
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-<style>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<style>
 html,body {
     width:1000px;
     background:gray;
@@ -20,8 +20,9 @@ html,body {
 .player {
 	width:640px;
 }
-</style>
+	</style>
 </head>
+
 <script type="text/javascript" th:inline="javascript">
 //<![CDATA[      
     var tag = document.createElement('script');
@@ -138,7 +139,10 @@ var output = [];
 	function handleFileSelect(evt) {
 		var files = evt.target.files;
 		for (var i = 0, f; f = files[i]; i++){
-			output.push(escape(f.name));
+			var str = f.name;
+			str = str.replace(/%20/g, " ");
+			str = str.replace(/\.[^/.]+$/, "");
+			output.push((str));
 		}
 	}
 	
@@ -146,7 +150,6 @@ var output = [];
 	
 	function post(path) {
 		var playlist = [[${playlistName}]];
-		console.log(playlist);
 		$.ajax({
 		    url: path,
 		    type : "POST",

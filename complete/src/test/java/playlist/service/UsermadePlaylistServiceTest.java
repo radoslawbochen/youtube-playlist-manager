@@ -44,12 +44,15 @@ public class UsermadePlaylistServiceTest {
 		UsermadePlaylist video3 = new UsermadePlaylist();
 		video3.setVideoTitle("fileName5");		
 		UsermadePlaylist video4 = new UsermadePlaylist();
-		video4.setVideoTitle("fileName4");
+		video4.setVideoTitle("fileName66666");
 		usermadePlaylist.addAll(Arrays.asList(video1, video2, video3, video4));
 		
 		List<UsermadePlaylist> compared = usermadePlaylistService.compare(filesNamesToCompare, usermadePlaylist);
 		
-		assertEquals("fileName5", compared.get(0).getVideoTitle());
+		assertEquals(false , compared.contains(video1));
+		assertEquals(false , compared.contains(video2));
+		assertEquals(false , compared.contains(video3));
+		assertEquals(true , compared.contains(video4));	
 	}
 	
 }

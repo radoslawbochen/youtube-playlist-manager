@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
+import org.apache.commons.lang.StringUtils;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -136,14 +137,18 @@ public class UsermadePlaylistServiceImpl implements UsermadePlaylistService {
 	@Override
 	public List<UsermadePlaylist> compare(List<String> filesNamesToCompare, List<UsermadePlaylist> usermadePlaylist) {
 		List<UsermadePlaylist> comparedPlaylist = new ArrayList<>();
-
+		
 		ListIterator<UsermadePlaylist> usermadePlaylistIterator = usermadePlaylist.listIterator();
 		
 		for(String name : filesNamesToCompare){
 			usermadePlaylistIterator = usermadePlaylist.listIterator();
 			while(usermadePlaylistIterator.hasNext()){
 				UsermadePlaylist tempUsermadePlaylist = usermadePlaylistIterator.next();
-				if(name == tempUsermadePlaylist.getVideoTitle()){
+				String diff = StringUtils.difference(name, tempUsermadePlaylist.getVideoTitle());
+				int namesCollectivelyLength = name.length() + tempUsermadePlaylist.getVideoTitle().length();
+
+				// if difference between names is higher than 30% delete it
+				if((( (diff.length() * 2) * 100) / namesCollectivelyLength) < 30){
 					usermadePlaylistIterator.remove();
 				}
 			}

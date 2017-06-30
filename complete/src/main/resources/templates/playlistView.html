@@ -32,7 +32,7 @@ Add playlist
 	<table bgcolor="#404040">
 	<tr th:each="info : ${usermadePlaylistInfoList}">
 		<td width="70%"><a th:text="${info.getName()}" th:href="@{'/viewPlaylist?playlist=' + ${info.getName()}}"></a></td>
-		<td width="30%" th:text="${info.getVideosAmount()}"></td>
+		<td width="30%" th:text="${info.getVideosAmount()} - 1"></td>
 		<td >
 			<form method="post">
 			<input type="hidden" th:value="${info.getName()}" name="delete" />

@@ -8,8 +8,6 @@ import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.WebDataBinder;
@@ -59,14 +57,11 @@ public class ViewPlaylistController {
 			) throws IOException{		
 				if(Auth.getFlow() == null){
 					return "redirect:/login";
-				}
-				
-				Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+				}				
 				
     			if (playlistName != null){
-    				List<UsermadePlaylist> usermadePlaylistListt = usermadePlaylistService.findByPlaylistName(playlistName);
-    				List<YoutubePlaylist> youtubePlaylistList = youtubePlaylistService.findYoutubePlaylists(usermadePlaylistListt);
-    				ArrayList<UsermadePlaylist> usermadePlaylistList = new ArrayList<UsermadePlaylist>(usermadePlaylistListt);
+    				ArrayList<UsermadePlaylist> usermadePlaylistList = new ArrayList<UsermadePlaylist>(usermadePlaylistService.findByPlaylistName(playlistName));
+    				List<YoutubePlaylist> youtubePlaylistList = youtubePlaylistService.findYoutubePlaylists(usermadePlaylistList);
  				    				
     				model.addAttribute("usermadePlaylist", new UsermadePlaylistWrapper());
     				model.addAttribute("playlistName", playlistName);
