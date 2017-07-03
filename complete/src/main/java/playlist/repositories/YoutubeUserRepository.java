@@ -10,7 +10,7 @@ import com.google.api.services.youtube.model.PlaylistItemListResponse;
 import com.google.api.services.youtube.model.PlaylistListResponse;
 import com.google.api.services.youtube.model.PlaylistSnippet;
 
-import playlist.controller.PlaylistController;
+import playlist.controller.LandingController;
 import playlist.entity.PlaylistItemInfo;
 import playlist.entity.youtubePlaylist.YoutubePlaylist;
 import playlist.entity.youtubePlaylist.YoutubePlaylistInfo;
@@ -53,7 +53,7 @@ public class YoutubeUserRepository {
 				e.printStackTrace();
 			}
 		if (channelId == null){
-			PlaylistController.redirectToOauthLogin();
+			LandingController.redirectToOauthLogin();
 		}
 			
 		return channelId;

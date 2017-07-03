@@ -1,21 +1,25 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <head>
-<meta name="viewport" http-equiv="Content-type" content="application/x-www-form-urlencoded; charset=UTF-8"/>
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 	<style>
 html,body {
-    width:1000px;
+    width:1140px;
     background:gray;
 }
 .youtubePlaylists {
-	clear:both;
+	width:640px;
+	clear:left;
+}
+.compareFiles {
+	float:right;
 }
 .usermadePlaylist {
-	width:360;
+	width:500;
 	float:right;
+	clear:right;
 }
 .player {
 	width:640px;
@@ -73,18 +77,19 @@ html,body {
 	<div th:if="!${#lists.isEmpty(usermadePlaylistList)}" >
 		<form action="#" method="post" th:action="@{playlists/delete}" th:object="${usermadePlaylist}">
 			<table bgcolor="#404040">
-			<tr th:each="userPlaylist, status : ${usermadePlaylistList}">
-				<td width="70%" th:text="${userPlaylist.getVideoTitle()}"></td>
-				<td width="30%" th:text="${userPlaylist.getTimesRepeated()}"></td>
-				<td>
-				<input type="checkbox" th:field="*{usermadePlaylists[__${status.index}__].id}" th:value="${userPlaylist.id}"/> 
-				</td>
-			</tr>
-			
-		</table>
-		<input type="hidden" th:value="${playlistName}" name="playlistName" />
-		<input type="submit" name="deletePlaylistName" value="Delete" />
+				<tr th:each="userPlaylist, status : ${usermadePlaylistList}">
+					<td width="70%" th:text="${userPlaylist.getVideoTitle()}"></td>
+					<td width="30%" th:text="${userPlaylist.getTimesRepeated()}"></td>
+					<td>
+						<input type="checkbox" th:field="*{usermadePlaylists[__${status.index}__].id}" th:value="${userPlaylist.id}"/> 
+					</td>
+				</tr>
+			</table>
+		
+			<input type="hidden" th:value="${playlistName}" name="playlistName" />
+			<input type="submit" name="deletePlaylistName" value="Delete" />
 		</form>
+		<a th:href="@{'/playlists/links?playlistName=' + ${playlistName}}">All videos links</a>
 	</div>
 </div>
 
@@ -120,17 +125,10 @@ html,body {
 </div>
 </div>
 
-<div>
-
-<form method="get" action="#" th:action="@{playlistst/links}">
-    <input type="hidden" th:value="${playlistName}" th:name="playlistName"/>    
-    <input type="submit" value="Links" />
-</form>
+<div id="compareFiles">
 
 <input type="file" id="files" name="files[]" multiple="multiple" />
-
-
-<input id="clickMe" type="button" value="clickme" onclick="post('/playlists/compare');" />
+<input type="button" value="compare" onclick="post('/playlists/compare');" />
 
 <script th:inline="javascript">
 /*<![CDATA[*/

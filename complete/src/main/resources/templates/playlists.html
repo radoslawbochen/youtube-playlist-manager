@@ -41,8 +41,8 @@ html,body {
 <div align="center" style="padding-bottom:3px">Add playlist</div>
 <form action="#" th:action="@{/playlists}" method="post">
   <label>Name:</label>
-  <input type="text" name="name"/>
-  <input type="submit" value="Submit" th:attr="value=${add}"/>
+  <input type="text" name="add"/>
+  <input type="submit" value="Submit"/>
 </form>
 <hr></hr>
 <br></br>
@@ -71,7 +71,6 @@ html,body {
 			</tr>
 		</table>
 	</div>
-
 </div>
 
 </body>

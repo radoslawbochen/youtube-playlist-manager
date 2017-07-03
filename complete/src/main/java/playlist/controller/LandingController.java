@@ -13,7 +13,7 @@ import org.springframework.web.servlet.view.RedirectView;
 import playlist.services.UserService;
 
 @Controller
-public class PlaylistController {
+public class LandingController {
 	
 	@Autowired
 	private UserService userService;
