@@ -2,7 +2,6 @@ package playlist.controller;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
@@ -32,8 +31,8 @@ import playlist.services.YoutubeAccountService;
 import playlist.services.YoutubePlaylistService;
 
 @Controller
-@RequestMapping("/viewPlaylist")
-public class ViewPlaylistController {
+@RequestMapping("/playlists")
+public class PlaylistsController {
 
     @InitBinder
     public void initBinder(WebDataBinder binder) {
@@ -75,7 +74,7 @@ public class ViewPlaylistController {
     				model.addAttribute("youtubePlaylistInfoList", youtubePlaylistService.findYoutubePlaylistsInfo());
 					model.addAttribute("usermadePlaylistInfoList", usermadePlaylistService.findDistinctPlaylistName());
 					
-					return "playlistView";
+					return "playlists";
     			}
 	}
 	
@@ -88,14 +87,14 @@ public class ViewPlaylistController {
 			usermadePlaylistService.saveUsermadePlaylist(new UsermadePlaylist(10L, youtubeAccountService.getChannelId(), addPlaylistName));
 		    String getPlaylist = "?playlist=" + addPlaylistName;
 		    
-			return "redirect:/viewPlaylist" + getPlaylist;
+			return "redirect:/playlists" + getPlaylist;
 		} else if (deletePlaylistName != null) {
 			usermadePlaylistService.deleteByPlaylistNameAndChannelId(deletePlaylistName);
 			
-			return "redirect:/viewPlaylist";
+			return "redirect:/playlists";
 		}
 		
-		return "redirect:/viewPlaylist";
+		return "redirect:/playlists";
 	}
     
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
@@ -105,7 +104,7 @@ public class ViewPlaylistController {
     		){
     	usermadePlaylistService.delete(usermadePlaylistWrapper.getUsermadePlaylists(), playlistName);
         	
-    	return "redirect:/viewPlaylist?playlist=" + playlistName;
+    	return "redirect:/playlists?playlist=" + playlistName;
     }
     
     @RequestMapping(value = "/add", method = RequestMethod.POST)
@@ -116,7 +115,7 @@ public class ViewPlaylistController {
 			Credential credential = Auth.getFlow().loadCredential(Auth.getUserId(userService)); 
 			usermadePlaylistService.add(credential, addListWrapper.getAddList(), playlistName);
 		
-    	return "redirect:/viewPlaylist?playlist=" + playlistName;
+    	return "redirect:/playlists?playlist=" + playlistName;
     }    
 
     @RequestMapping(value = "/compare", method = RequestMethod.POST)
@@ -125,9 +124,8 @@ public class ViewPlaylistController {
     		@RequestParam("files[]") String[] files,
     		HttpServletResponse response
     		) throws IOException{
-    	List<String> userFilesNamesToCompare = Arrays.asList(files);
     	List<UsermadePlaylist> usermadePlaylist = usermadePlaylistService.findByPlaylistName(playlistName);
-    	List<UsermadePlaylist> comparedPlaylist = usermadePlaylistService.compare(userFilesNamesToCompare, usermadePlaylist);
+    	List<UsermadePlaylist> comparedPlaylist = usermadePlaylistService.compare(files, usermadePlaylist);
     	
     	return comparedPlaylist;
     }

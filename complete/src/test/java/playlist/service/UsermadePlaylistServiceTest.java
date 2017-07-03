@@ -30,11 +30,7 @@ public class UsermadePlaylistServiceTest {
 	
 	@Test
 	public void compareTest(){
-		List<String> filesNamesToCompare = new ArrayList<>();
-		filesNamesToCompare.add("fileName1");
-		filesNamesToCompare.add("fileName2");
-		filesNamesToCompare.add("fileName3");
-		filesNamesToCompare.add("fileName4");
+		String[] filesNamesToCompare =  {"fileName1", "fileName2", "fileName3", "fileName4"};
 				
 		List<UsermadePlaylist> usermadePlaylist = new ArrayList<>();
 		UsermadePlaylist video1 = new UsermadePlaylist();

@@ -71,7 +71,7 @@ html,body {
 
 <div class="usermadePlaylist">
 	<div th:if="!${#lists.isEmpty(usermadePlaylistList)}" >
-		<form action="#" method="post" th:action="@{viewPlaylist/delete}" th:object="${usermadePlaylist}">
+		<form action="#" method="post" th:action="@{playlists/delete}" th:object="${usermadePlaylist}">
 			<table bgcolor="#404040">
 			<tr th:each="userPlaylist, status : ${usermadePlaylistList}">
 				<td width="70%" th:text="${userPlaylist.getVideoTitle()}"></td>
@@ -90,7 +90,7 @@ html,body {
 
 <div class="youtubePlaylists">
 <div class="panel-group">
-	<form method="post" th:action="@{viewPlaylist/add}" th:object="${addList}">
+	<form method="post" th:action="@{playlists/add}" th:object="${addList}">
 	<div th:if="!${#lists.isEmpty(youtubePlaylistList)}" >	
   	<div th:each="youtubePlaylist, status : ${youtubePlaylistList}" >
   		<div class="panel panel-default">
@@ -122,7 +122,7 @@ html,body {
 
 <div>
 
-<form method="get" action="#" th:action="@{viewPlaylist/links}">
+<form method="get" action="#" th:action="@{playlistst/links}">
     <input type="hidden" th:value="${playlistName}" th:name="playlistName"/>    
     <input type="submit" value="Links" />
 </form>
@@ -130,7 +130,7 @@ html,body {
 <input type="file" id="files" name="files[]" multiple="multiple" />
 
 
-<input id="clickMe" type="button" value="clickme" onclick="post('/viewPlaylist/compare');" />
+<input id="clickMe" type="button" value="clickme" onclick="post('/playlists/compare');" />
 
 <script th:inline="javascript">
 /*<![CDATA[*/

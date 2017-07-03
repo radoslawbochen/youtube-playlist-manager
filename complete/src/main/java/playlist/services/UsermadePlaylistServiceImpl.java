@@ -135,9 +135,9 @@ public class UsermadePlaylistServiceImpl implements UsermadePlaylistService {
 	}
 
 	@Override
-	public List<UsermadePlaylist> compare(List<String> filesNamesToCompare, List<UsermadePlaylist> usermadePlaylist) {
+	public List<UsermadePlaylist> compare(String[] filesNamesToCompare, List<UsermadePlaylist> usermadePlaylist) {
 		List<UsermadePlaylist> comparedPlaylist = new ArrayList<>();
-		
+
 		ListIterator<UsermadePlaylist> usermadePlaylistIterator = usermadePlaylist.listIterator();
 		
 		for(String name : filesNamesToCompare){

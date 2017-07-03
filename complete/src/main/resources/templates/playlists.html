@@ -1,0 +1,78 @@
+<html xmlns:th="http://www.thymeleaf.org">
+	
+<head>
+<style>
+html,body {
+    width:1000px;
+    background-color:#404040;
+}
+.usermadePlaylists {	
+	background-color:gray;
+	width:300px;	
+	padding:3px 10px 10px 10px;
+}
+.youtubePlaylistInfo {
+	float:right;
+	width:600px;
+	background-color:gray;				
+	padding:5px;	
+}
+</style>
+</head>
+<body>
+ 
+<div class="youtubePlaylistInfo" th:if="${#lists.isEmpty(youtubePlaylistInfoList)}">
+	<p>You have no playlists on YouTube!</p>
+</div>
+
+<div class="youtubePlaylistInfo" th:if="!${#lists.isEmpty(youtubePlaylistInfoList)}">
+	<table>
+		<tr th:each="info : ${youtubePlaylistInfoList}">
+			<td width="70%" th:text="${info.getName()}"></td>
+			<td width="20%" th:text="${info.getVideosAmount()}"></td>
+			<td width="10%" th:text="${info.getPlaylistId()}"></td>
+		</tr>
+	</table>
+</div>
+
+<div class="usermadePlaylists">
+<p align="center"><font size="5"><b>Your playlists</b></font></p>
+<hr></hr>
+<div align="center" style="padding-bottom:3px">Add playlist</div>
+<form action="#" th:action="@{/playlists}" method="post">
+  <label>Name:</label>
+  <input type="text" name="name"/>
+  <input type="submit" value="Submit" th:attr="value=${add}"/>
+</form>
+<hr></hr>
+<br></br>
+
+	<div th:if="!${#lists.isEmpty(usermadePlaylistInfoList)}">
+		<table>
+			<tr th:each="info : ${usermadePlaylistInfoList}">
+				<td width="70%"><a th:text="${info.getName()}" th:href="@{'/playlists?playlist=' + ${info.getName()}}"></a></td>
+				<td width="30%" th:text="${info.getVideosAmount()} - 1"></td>
+				<td>
+					<form method="post">
+						<input type="hidden" th:value="${info.getName()}" name="delete" />
+						<input type="submit" value="Delete playlist" />
+					</form>
+				</td>
+			</tr>
+		</table>	
+	</div>
+
+	<div th:if="${#lists.isEmpty(usermadePlaylistInfoList)}">
+		<table bgcolor="#404040">
+			<tr>
+			<td>
+			<p>You have not made playlists yet</p>
+			</td>
+			</tr>
+		</table>
+	</div>
+
+</div>
+
+</body>
+</html>
